@@ -1,0 +1,27 @@
+Crea una ficha técnica detallada para el personaje biblico "{personaje}".
+
+La ficha será utilizada para generar imágenes consistentes en múltiples escenas de video cinematográfico.
+
+Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura exacta:
+
+{
+  "name": "",
+  "age_range": "",
+  "physical_description": "",
+  "hair": "",
+  "eyes": "",
+  "skin": "",
+  "body_type": "",
+  "clothing_style": "",
+  "distinctive_features": "",
+  "personality_traits": "",
+  "default_expression": "",
+}
+
+Instrucciones importantes:
+
+- Describe rasgos físicos de forma visual y concreta.
+- Evita historia larga o narrativa.
+- Piensa en cómo un generador de imágenes representaría al personaje.
+- Sé específico en detalles visuales.
+- No agregues texto fuera del JSON.

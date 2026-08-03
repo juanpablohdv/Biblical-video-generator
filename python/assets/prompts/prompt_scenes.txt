@@ -1,0 +1,37 @@
+Analiza el siguiente guion y divídelo en entre 5 y 10 escenas visuales claras.
+
+Reglas estrictas:
+
+- Cada escena debe representar un momento visual distinto.
+- Describe únicamente lo que se vería en pantalla (acción, personajes, entorno, objetos clave).
+- NO incluyas estilo artístico.
+- NO describas iluminación, cámara o composición.
+- NO agregues interpretación narrativa.
+- NO escribas diálogos largos.
+- Cada descripción debe tener máximo 3–4 líneas.
+- Cada escena debe poder representarse en una sola imagen vertical clara con un sujeto principal identificable.
+- Incluye una lista llamada "characters" con los nombres exactos de los personajes visibles en esa escena.
+- Usa solo personajes mencionados explícitamente en el guion.
+- No inventes personajes.
+
+
+Devuelve ÚNICAMENTE un JSON válido con el siguiente formato exacto:
+
+[
+  {
+    "scene": 1,
+    "description": "Descripción visual aquí"
+    "characters" : ["jesus" , "peter"]
+  },
+  {
+    "scene": 2,
+    "description": "Descripción visual aquí"
+    "characters" : ["jesus" , "peter"]
+  }
+]
+
+No agregues texto antes ni después del JSON.
+
+Guion:
+
+{guion}
