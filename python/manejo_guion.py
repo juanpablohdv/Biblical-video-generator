@@ -44,19 +44,38 @@ def normalizar_nombre(nombre):
     nombre = "".join(c for c in nombre if unicodedata.category(c) != "Mn")
     return nombre
 
-def generate_scenes(guion):
-    "Funcion para generar escenas a partir del guion"
+def generate_scenes(guion, idea_id):
+    """
+    Genera las escenas a partir del guion
+    y las guarda dentro de la carpeta de la idea.
+    """
+
     prompt = cargar_prompts("scenes", guion=guion)
-    reponse = client.chat.completions.create(
+
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
-        response_format={"type": "json_object"},
         messages=[
-            {"role": "user", "content": prompt}
+            {
+                "role": "user",
+                "content": prompt
+            }
         ]
     )
 
-    content = reponse.choices[0].message.content.strip()
+    content = response.choices[0].message.content.strip()
+
     scenes = json.loads(content)
+
+    ruta_scenes = (
+        DIR_IDEAS
+        / f"idea_{idea_id:05d}"
+        / f"scenes_{idea_id}.json"
+    )
+
+    guardar_json(ruta_scenes, scenes)
+
+    print(f"[OK] Escenas guardadas en: {ruta_scenes}")
+
     return scenes
 
 def crear_fichas(scenes):
@@ -206,12 +225,11 @@ def cargar_fichas_de_escena(scene):
 
     return fichas
 
-def optimizador_fichas(scenes):
+def optimizador_fichas(scenes, idea_id):
     """
-    Optimiza las fichas de cada escena.
-
+    Optimiza las fichas de los personajes para cada escena.
     Mantiene las fichas completas de los personajes principales
-    y resume las de los personajes secundarios.
+    y resume las fichas de los personajes secundarios.
     """
 
     escenas_optimizadas = []
@@ -222,8 +240,16 @@ def optimizador_fichas(scenes):
 
         prompt = cargar_prompts(
             "optimizer",
-            scene=json.dumps(scene, ensure_ascii=False, indent=4),
-            fichas=json.dumps(fichas, ensure_ascii=False, indent=4)
+            scene=json.dumps(
+                scene,
+                ensure_ascii=False,
+                indent=4
+            ),
+            fichas=json.dumps(
+                fichas,
+                ensure_ascii=False,
+                indent=4
+            )
         )
 
         response = client.chat.completions.create(
@@ -243,8 +269,23 @@ def optimizador_fichas(scenes):
 
         escenas_optimizadas.append(escena_optimizada)
 
-    return escenas_optimizadas
+    ruta_optimized = (
+        DIR_IDEAS
+        / f"idea_{idea_id:05d}"
+        / f"optimized_scenes_{idea_id}.json"
+    )
 
+    guardar_json(
+        ruta_optimized,
+        escenas_optimizadas
+    )
+
+    print(
+        f"[OK] Escenas optimizadas guardadas en: "
+        f"{ruta_optimized}"
+    )
+
+    return escenas_optimizadas
 
 
 def creador_prompts_imagenes(characters, scene_description):
