@@ -7,6 +7,8 @@ import unicodedata
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from python.guion_generator import leer_txt
+
 
 BASE_DIR = Path(__file__).resolve().parent
 DIR_IDEAS = BASE_DIR /"data" / "ideas"
@@ -287,6 +289,84 @@ def optimizador_fichas(scenes, idea_id):
 
     return escenas_optimizadas
 
+def creador_prompts_imagenes(optimized_scenes, idea_id):
+    """
+    Crea y guarda los prompts de imagen para todas las escenas.
+    """
 
-def creador_prompts_imagenes(characters, scene_description):
-    "Funcion para crear prompts de imagen a partir de las escenas"
+    ruta_identidad = BASE_DIR /"assets" / "prompts" / "prompt_visual_identity.txt"
+    identidad_visual = leer_txt(ruta_identidad).strip()
+
+    ruta_prompts = (
+        DIR_IDEAS
+        / f"idea_{idea_id:05d}"
+        / "prompts"
+    )
+
+    ruta_prompts.mkdir(parents=True, exist_ok=True)
+
+    prompts = []
+
+    for scene in optimized_scenes:
+
+        descripcion = scene["description"]
+
+        personajes_prompt = ""
+
+        for personaje in scene.get("main_characters", []):
+
+            ficha = personaje["profile"]
+
+            personajes_prompt += f"""
+MAIN CHARACTER: {personaje["name"]}
+
+Age: {ficha.get("age_range", "")}
+Physical appearance: {ficha.get("physical_description", "")}
+Hair: {ficha.get("hair", "")}
+Eyes: {ficha.get("eyes", "")}
+Skin: {ficha.get("skin", "")}
+Body type: {ficha.get("body_type", "")}
+Clothing: {ficha.get("clothing_style", "")}
+Distinctive features: {ficha.get("distinctive_features", "")}
+Default expression: {ficha.get("default_expression", "")}
+"""
+
+        for personaje in scene.get("secondary_characters", []):
+
+            personajes_prompt += f"""
+SECONDARY CHARACTER: {personaje["name"]}
+
+Visual description:
+{personaje["summary"]}
+"""
+
+        prompt_final = f"""
+{identidad_visual}
+
+SCENE:
+{descripcion}
+
+CHARACTERS:
+{personajes_prompt}
+""".strip()
+
+        numero_escena = scene["scene"]
+
+        ruta_prompt = (
+            ruta_prompts
+            / f"scene_{numero_escena:02d}.txt"
+        )
+
+        ruta_prompt.write_text(
+            prompt_final,
+            encoding="utf-8"
+        )
+
+        prompts.append(prompt_final)
+
+        print(
+            f"[OK] Prompt generado para escena "
+            f"{numero_escena}"
+        )
+
+    return prompts
