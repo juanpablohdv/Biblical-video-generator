@@ -9,15 +9,15 @@ from openai import OpenAI
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DIR_IDEAS = BASE_DIR / "ideas"
-DIR_PERSONAJES = BASE_DIR / "personajes"
+DIR_IDEAS = BASE_DIR /"data" / "ideas"
+DIR_PERSONAJES = BASE_DIR / "data" / "personajes"
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 client=OpenAI()
 
 def cargar_prompts(prompt_name, **kwargs):
     "Funcion para cargar los prompts desde un archivo de texto (guion, scenes, images)"
-    ruta = BASE_DIR / "prompts" / f"prompt_{prompt_name}.txt"
+    ruta = BASE_DIR / "assets" / "prompts" / f"prompt_{prompt_name}.txt"
     with open(ruta, "r", encoding="utf-8") as f:
         template = f.read()
     return template.format(**kwargs)
@@ -108,9 +108,44 @@ def cargar_fichas_de_escena(scene):
 
     return fichas
 
-def optimizador_fichas():
-    "Funcion para optimizar las fichas de los personajes a partir de las escenas"
-    
+def optimizador_fichas(scenes):
+    """
+    Optimiza las fichas de cada escena.
+
+    Mantiene las fichas completas de los personajes principales
+    y resume las de los personajes secundarios.
+    """
+
+    escenas_optimizadas = []
+
+    for scene in scenes:
+
+        fichas = cargar_fichas_de_escena(scene)
+
+        prompt = cargar_prompts(
+            "optimizer",
+            scene=json.dumps(scene, ensure_ascii=False, indent=4),
+            fichas=json.dumps(fichas, ensure_ascii=False, indent=4)
+        )
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        content = response.choices[0].message.content.strip()
+
+        escena_optimizada = json.loads(content)
+
+        escenas_optimizadas.append(escena_optimizada)
+
+    return escenas_optimizadas
 
 
 
