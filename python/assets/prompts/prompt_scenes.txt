@@ -14,20 +14,14 @@ Reglas estrictas:
 - Usa solo personajes mencionados explícitamente en el guion.
 - No inventes personajes.
 
-
-Devuelve ÚNICAMENTE un JSON válido con el siguiente formato exacto:
+Devuelve ÚNICAMENTE un JSON válido con el siguiente formato:
 
 [
-  {
+  {{
     "scene": 1,
-    "description": "Descripción visual aquí"
-    "characters" : ["jesus" , "peter"]
-  },
-  {
-    "scene": 2,
-    "description": "Descripción visual aquí"
-    "characters" : ["jesus" , "peter"]
-  }
+    "description": "Descripción visual aquí",
+    "characters": ["Jesus", "Peter"]
+  }}
 ]
 
 No agregues texto antes ni después del JSON.
