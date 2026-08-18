@@ -7,7 +7,8 @@ from openai import OpenAI
 from manejo_guion import cargar_prompts
 
 BASE_DIR = Path(__file__).resolve().parent
-DIR_IDEAS = BASE_DIR / "ideas"
+DIR_IDEAS = BASE_DIR / "data" / "ideas"
+
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 client=OpenAI()

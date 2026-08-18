@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
-DIR_IDEAS = BASE_DIR.parent / "ideas"
+DIR_IDEAS = BASE_DIR.parent / "data" / "ideas"
 
 load_dotenv(BASE_DIR.parent / ".env")
 
