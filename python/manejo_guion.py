@@ -11,8 +11,9 @@ from python.guion_generator import leer_txt
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DIR_IDEAS = BASE_DIR /"data" / "ideas"
+DIR_IDEAS = BASE_DIR / "data" / "ideas"
 DIR_PERSONAJES = BASE_DIR / "data" / "personajes"
+
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 client=OpenAI()
