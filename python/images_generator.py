@@ -74,7 +74,7 @@ def generar_imagenes(idea_id):
     ruta_imagenes = (
         DIR_IDEAS
         / f"idea_{idea_id:05d}"
-        / "imagenes"
+        / "images"
     )
 
     if not ruta_prompts.exists():

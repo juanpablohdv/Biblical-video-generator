@@ -6,9 +6,7 @@ import unicodedata
 
 from dotenv import load_dotenv
 from openai import OpenAI
-
-from python.guion_generator import leer_txt
-
+from utils import leer_txt
 
 BASE_DIR = Path(__file__).resolve().parent
 DIR_IDEAS = BASE_DIR / "data" / "ideas"

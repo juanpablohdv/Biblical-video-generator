@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from manejo_guion import cargar_prompts
+from utils import cargar_prompts
 
 BASE_DIR = Path(__file__).resolve().parent
 DIR_IDEAS = BASE_DIR / "data" / "ideas"
@@ -12,12 +12,6 @@ DIR_IDEAS = BASE_DIR / "data" / "ideas"
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 client=OpenAI()
-
-def leer_txt(ruta):
-    "Lee el contenido de un archivo de texto y lo retorna como string"
-    with open(ruta, "r", encoding="utf-8") as f:
-        return f.read()
-
 
 def guardar_guion_a_archivo(id_idea, text):
     "Funcion para guardar el guion en un archivo de texto"

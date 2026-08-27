@@ -2,7 +2,7 @@
 from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
-from guion_generator import cargar_prompts
+from utils import cargar_prompts
 
 # Cargar .env
 BASE_DIR = Path(__file__).resolve().parent
