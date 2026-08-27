@@ -2,13 +2,16 @@
 
 import sqlite3
 from datetime import datetime
-from anyio import Path
+from pathlib import Path
 
-# Carpeta raíz del proyecto
-PROJECT_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
-# Base de datos
-DB_NAME = PROJECT_DIR / "data" / "ideas.db"
+DB_NAME = BASE_DIR / "data" / "ideas.db"
+
+DB_NAME.parent.mkdir(
+    parents=True,
+    exist_ok=True
+)
 
 print(f"son las {datetime.now()} y se ha cargado el módulo de ideas_db")
 
