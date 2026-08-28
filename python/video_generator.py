@@ -210,9 +210,9 @@ def generar_video(idea_id):
         f"idea_{idea_id:05d}"
     )
 
-    ruta_imagenes = (
+    ruta_images = (
         ruta_idea /
-        "imagenes"
+        "images"
     )
 
     ruta_voz = (
@@ -234,27 +234,27 @@ def generar_video(idea_id):
     # VERIFICAR IMÁGENES
     # ======================================================
 
-    if not ruta_imagenes.exists():
+    if not ruta_images.exists():
 
         raise FileNotFoundError(
             f"No existe la carpeta de imágenes: "
-            f"{ruta_imagenes}"
+            f"{ruta_images}"
         )
 
-    archivos_imagenes = sorted(
-        ruta_imagenes.glob("scene_*.png")
+    archivos_images = sorted(
+        ruta_images.glob("scene_*.png")
     )
 
-    if not archivos_imagenes:
+    if not archivos_images:
 
         raise FileNotFoundError(
             f"No se encontraron imágenes en: "
-            f"{ruta_imagenes}"
+            f"{ruta_images}"
         )
 
     print(
         f"[INFO] Imágenes encontradas: "
-        f"{len(archivos_imagenes)}"
+        f"{len(archivos_images)}"
     )
 
     # ======================================================
@@ -322,7 +322,7 @@ def generar_video(idea_id):
 
     duracion_por_imagen = (
         duracion_audio /
-        len(archivos_imagenes)
+        len(archivos_images)
     )
 
     print(
@@ -336,7 +336,7 @@ def generar_video(idea_id):
 
     clips = []
 
-    for ruta_imagen in archivos_imagenes:
+    for ruta_imagen in archivos_images:
 
         print(
             f"[INFO] Procesando imagen: "
