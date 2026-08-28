@@ -4,7 +4,7 @@ La ficha será utilizada para generar imágenes consistentes en múltiples escen
 
 Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura exacta:
 
-{
+{{
   "name": "",
   "age_range": "",
   "physical_description": "",
@@ -16,7 +16,7 @@ Devuelve EXCLUSIVAMENTE un JSON válido con esta estructura exacta:
   "distinctive_features": "",
   "personality_traits": "",
   "default_expression": "",
-}
+}}
 
 Instrucciones importantes:
 

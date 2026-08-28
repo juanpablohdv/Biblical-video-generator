@@ -17,11 +17,11 @@ Reglas estrictas:
 Devuelve ÚNICAMENTE un JSON válido con el siguiente formato:
 
 [
-  {
+  {{
     "scene": 1,
     "description": "Descripción visual aquí",
     "characters": ["Jesus", "Peter"]
-  }
+  }}
 ]
 
 No agregues texto antes ni después del JSON.

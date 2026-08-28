@@ -25,7 +25,4 @@ def cargar_prompts(prompt_name, **kwargs):
     with open(ruta, "r", encoding="utf-8") as f:
         template = f.read()
 
-    for key, value in kwargs.items():
-        template = template.replace(f"{{{key}}}", str(value))
-
-    return template
+    return template.format(**kwargs)
