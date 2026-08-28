@@ -49,13 +49,13 @@ RULES:
 
 Return the result using exactly this structure:
 
-{
+{{
     "scene": 1,
     "description": "Original scene description",
     "main_characters": [
-        {
+        {{
             "name": "Character name",
-            "profile": {
+            "profile": {{
                 "name": "",
                 "age_range": "",
                 "physical_description": "",
@@ -67,16 +67,16 @@ Return the result using exactly this structure:
                 "distinctive_features": "",
                 "personality_traits": "",
                 "default_expression": ""
-            }
-        }
+            }}
+        }}
     ],
     "secondary_characters": [
-        {
+        {{
             "name": "Character name",
             "summary": "Concise visual summary of the character."
-        }
+        }}
     ]
-}
+}}
 
 SCENE:
 
