@@ -19,7 +19,7 @@ def cargar_prompts(prompt_name, **kwargs):
     y reemplaza sus variables.
     """
 
-    ruta = BASE_DIR / "prompts" / f"prompt_{prompt_name}.txt"
+    ruta = BASE_DIR / "assets" / "prompts" / f"prompt_{prompt_name}.txt"
 
     with open(ruta, "r", encoding="utf-8") as f:
         template = f.read()
