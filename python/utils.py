@@ -1,4 +1,5 @@
 from pathlib import Path
+from tempfile import template
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -24,4 +25,7 @@ def cargar_prompts(prompt_name, **kwargs):
     with open(ruta, "r", encoding="utf-8") as f:
         template = f.read()
 
-    return template.format(**kwargs)
+    for key, value in kwargs.items():
+        template = template.replace(f"{{{key}}}", str(value))
+
+    return template
