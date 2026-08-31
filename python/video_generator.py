@@ -28,6 +28,7 @@ DIR_IDEAS = BASE_DIR / "data" / "ideas"
 
 DIR_MUSIC = BASE_DIR / "assets" / "music"
 
+FONT_SUBTITULOS = BASE_DIR / "assets" / "fonts" / "Montserrat-SemiBold.ttf"
 
 # ==========================================================
 # SELECCIONAR MÚSICA
