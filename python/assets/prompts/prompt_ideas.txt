@@ -1,9 +1,25 @@
-Genera 5 ideas de videos catolicos virales para YouTube Shorts o TikTok.
+Genera 5 ideas de videos católicos virales para YouTube Shorts o TikTok.
 
-REGLAS:
+REGLAS DE CONTENIDO:
+
+- Todo el contenido debe estar basado exclusivamente en la doctrina y enseñanza de la Iglesia Católica.
+- Utiliza como referencia la Biblia Católica y el Catecismo de la Iglesia Católica.
+- Para los contenidos bíblicos, respeta el canon de las Sagradas Escrituras reconocido por la Iglesia Católica, incluyendo los libros deuterocanónicos.
+- No utilices interpretaciones, doctrinas, tradiciones o afirmaciones propias de denominaciones protestantes, evangélicas u otras variantes del cristianismo cuando contradigan la enseñanza católica.
+- No presentes como enseñanza católica algo que contradiga el Catecismo de la Iglesia Católica.
+- No inventes acontecimientos, personajes, milagros, citas bíblicas o enseñanzas.
+- No atribuyas a la Biblia afirmaciones que no aparecen en ella.
+- Cuando un tema no esté explícitamente explicado en la Biblia, debe ser compatible con la doctrina católica y no presentarse como una cita o hecho bíblico.
+- Respeta especialmente las enseñanzas católicas sobre Dios, la Santísima Trinidad, Jesucristo, la Virgen María, los santos, los sacramentos, la Iglesia, la salvación, los ángeles, los demonios, el pecado y la vida eterna.
+
+REGLAS PARA LAS IDEAS:
+
 - Cada idea debe ser una sola pregunta o frase corta.
-- Los temas tienen que venir de la Biblia o de historias cristianas y catolicas.
-- Estilo viral, curioso y llamativo.
-- Lenguaje sencillo y directo.
+- Los temas deben estar relacionados con la Biblia, la doctrina católica o la historia de la Iglesia Católica.
+- Deben ser interesantes, curiosos y apropiados para contenido viral.
+- Utiliza lenguaje sencillo y directo.
+- La idea debe despertar curiosidad sin recurrir a afirmaciones falsas o sensacionalistas.
 - Máximo 15 palabras por idea.
-- No agregues numeración ni texto adicional.
+- No agregues numeración.
+- No agregues explicaciones.
+- Devuelve únicamente las 5 ideas, una por línea.
