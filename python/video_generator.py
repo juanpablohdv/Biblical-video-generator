@@ -302,6 +302,9 @@ def generar_video(idea_id):
 
         guion = f.read().strip()
 
+    print("[DEBUG] GUION:")
+    print(repr(guion))
+
     # ======================================================
     # CARGAR NARRACIÓN
     # ======================================================
