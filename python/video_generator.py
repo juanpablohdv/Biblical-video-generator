@@ -70,12 +70,20 @@ def seleccionar_musica(idea_id):
 
 def crear_subtitulos(guion, duracion_audio):
     """
-    Divide el guion en frases y asigna una duración
-    aproximada a cada subtítulo según la cantidad
-    de palabras.
+    Divide el guion en frases y bloques de subtítulos.
 
-    No utiliza reconocimiento de voz todavía.
+    - Máximo aproximadamente 32 caracteres por línea.
+    - Nunca corta una palabra.
+    - Mantiene las palabras completas.
+    - La duración se reparte proporcionalmente
+      según la cantidad de palabras.
     """
+
+    # ------------------------------------------------------
+    # Limpiar texto
+    # ------------------------------------------------------
+
+    guion = guion.replace("\ufeff", "").strip()
 
     # ------------------------------------------------------
     # Dividir el guion por frases
@@ -83,10 +91,9 @@ def crear_subtitulos(guion, duracion_audio):
 
     frases = re.split(
         r'(?<=[.!?])\s+',
-        guion.strip()
+        guion
     )
 
-    # Eliminar frases vacías
     frases = [
         frase.strip()
         for frase in frases
@@ -97,12 +104,48 @@ def crear_subtitulos(guion, duracion_audio):
         return []
 
     # ------------------------------------------------------
-    # Contar palabras totales
+    # Crear bloques sin cortar palabras
+    # ------------------------------------------------------
+
+    bloques = []
+
+    for frase in frases:
+
+        palabras = frase.split()
+
+        bloque_actual = ""
+
+        for palabra in palabras:
+
+            # Primera palabra del bloque
+            if not bloque_actual:
+
+                bloque_actual = palabra
+
+            # Si la palabra cabe, agregarla
+            elif len(bloque_actual) + 1 + len(palabra) <= 32:
+
+                bloque_actual += " " + palabra
+
+            # Si no cabe, empezar nuevo bloque
+            else:
+
+                bloques.append(bloque_actual)
+
+                bloque_actual = palabra
+
+        # Guardar último bloque
+        if bloque_actual:
+
+            bloques.append(bloque_actual)
+
+    # ------------------------------------------------------
+    # Contar palabras
     # ------------------------------------------------------
 
     total_palabras = sum(
-        len(frase.split())
-        for frase in frases
+        len(bloque.split())
+        for bloque in bloques
     )
 
     subtitulos = []
@@ -110,12 +153,12 @@ def crear_subtitulos(guion, duracion_audio):
     tiempo_actual = 0
 
     # ------------------------------------------------------
-    # Asignar duración a cada frase
+    # Distribuir duración
     # ------------------------------------------------------
 
-    for frase in frases:
+    for bloque in bloques:
 
-        palabras = len(frase.split())
+        palabras = len(bloque.split())
 
         duracion = (
             palabras / total_palabras
@@ -124,13 +167,12 @@ def crear_subtitulos(guion, duracion_audio):
         subtitulos.append({
             "inicio": tiempo_actual,
             "fin": tiempo_actual + duracion,
-            "texto": frase
+            "texto": bloque
         })
 
         tiempo_actual += duracion
 
     return subtitulos
-
 
 # ==========================================================
 # CREAR CLIPS DE TEXTO
@@ -162,13 +204,15 @@ def crear_clips_subtitulos(
 
         clip = TextClip(
             text=texto,
-            font_size=55,
+            font=str(FONT_SUBTITULOS),
+            font_size=58,
             color="white",
             stroke_color="black",
             stroke_width=3,
             method="caption",
-            size=(video_width - 120, None)
-        )
+            size=(video_width - 160, None),
+            text_align="center"
+        )   
 
         # --------------------------------------------------
         # Posición y duración
@@ -179,7 +223,7 @@ def crear_clips_subtitulos(
             .with_start(subtitulo["inicio"])
             .with_duration(duracion)
             .with_position(
-                ("center", video_height - 350)
+                ("center", video_height - 500)
             )
         )
 
