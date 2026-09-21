@@ -36,7 +36,15 @@ def generate_voice(text, idea_id):
     with client.audio.speech.with_streaming_response.create(
         model="gpt-4o-mini-tts",
         voice="alloy",
-        input=text
+        input=text,
+        speed=0.92,
+        instructions=(
+            "Habla en español latinoamericano con una voz masculina cálida, "
+            "natural y cercana. Mantén un tono reflexivo, sereno y ligeramente solemne, "
+            "como alguien contando una historia importante. "
+            "Evita sonar como un locutor de radio o una voz artificial. "
+            "Haz pausas naturales entre las ideas y enfatiza suavemente las palabras importantes."
+        ),
     ) as response:
 
         response.stream_to_file(ruta_salida)
