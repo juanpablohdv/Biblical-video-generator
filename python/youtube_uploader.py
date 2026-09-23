@@ -14,10 +14,20 @@ from googleapiclient.http import MediaFileUpload
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DIR_CREDENTIALS = BASE_DIR / "credentials"
+DIR_CREDENTIALS = (
+    BASE_DIR /
+    "credentials"
+)
 
-CLIENT_SECRETS_FILE = DIR_CREDENTIALS / "client_secret.json"
-TOKEN_FILE = DIR_CREDENTIALS / "token_youtube.json"
+CLIENT_SECRETS_FILE = (
+    DIR_CREDENTIALS /
+    "client_secret.json"
+)
+
+TOKEN_FILE = (
+    DIR_CREDENTIALS /
+    "token_youtube.json"
+)
 
 
 # ============================================================
@@ -39,35 +49,41 @@ def obtener_credenciales():
 
     Primera ejecución:
         - Abre el navegador.
-        - El usuario autoriza el acceso.
+        - El usuario autoriza.
         - Se guarda token_youtube.json.
 
     Ejecuciones posteriores:
-        - Reutiliza el token guardado.
-        - Si está vencido, intenta renovarlo automáticamente.
+        - Reutiliza el token.
+        - Si está vencido, intenta renovarlo.
     """
 
     credenciales = None
 
     # --------------------------------------------------------
-    # 1. Intentar cargar un token existente
+    # Cargar token existente
     # --------------------------------------------------------
 
     if TOKEN_FILE.exists():
 
-        credenciales = Credentials.from_authorized_user_file(
-            TOKEN_FILE,
-            SCOPES
+        credenciales = (
+            Credentials
+            .from_authorized_user_file(
+                TOKEN_FILE,
+                SCOPES
+            )
         )
 
     # --------------------------------------------------------
-    # 2. Si no existe o ya no es válido
+    # Comprobar credenciales
     # --------------------------------------------------------
 
-    if not credenciales or not credenciales.valid:
+    if (
+        not credenciales
+        or not credenciales.valid
+    ):
 
         # ----------------------------------------------------
-        # Token vencido pero con refresh token
+        # Renovar token
         # ----------------------------------------------------
 
         if (
@@ -76,9 +92,13 @@ def obtener_credenciales():
             and credenciales.refresh_token
         ):
 
-            print("[INFO] Renovando credenciales de YouTube...")
+            print(
+                "[INFO] Renovando credenciales de YouTube..."
+            )
 
-            credenciales.refresh(Request())
+            credenciales.refresh(
+                Request()
+            )
 
         # ----------------------------------------------------
         # Primera autorización
@@ -89,24 +109,37 @@ def obtener_credenciales():
             if not CLIENT_SECRETS_FILE.exists():
 
                 raise FileNotFoundError(
-                    "\nNo se encontró el archivo de credenciales de Google.\n"
-                    f"Debe existir aquí:\n{CLIENT_SECRETS_FILE}\n"
+                    "\nNo se encontró el archivo "
+                    "de credenciales de Google.\n"
+                    f"Debe existir aquí:\n"
+                    f"{CLIENT_SECRETS_FILE}\n"
                 )
 
-            print("[INFO] No existe una autorización previa.")
-            print("[INFO] Se abrirá el navegador para autorizar YouTube.")
-
-            flujo = InstalledAppFlow.from_client_secrets_file(
-                CLIENT_SECRETS_FILE,
-                SCOPES
+            print(
+                "[INFO] No existe una autorización previa."
             )
 
-            credenciales = flujo.run_local_server(
-                port=0
+            print(
+                "[INFO] Se abrirá el navegador "
+                "para autorizar YouTube."
+            )
+
+            flujo = (
+                InstalledAppFlow
+                .from_client_secrets_file(
+                    CLIENT_SECRETS_FILE,
+                    SCOPES
+                )
+            )
+
+            credenciales = (
+                flujo.run_local_server(
+                    port=0
+                )
             )
 
         # ----------------------------------------------------
-        # Guardar credenciales para próximas ejecuciones
+        # Guardar token
         # ----------------------------------------------------
 
         DIR_CREDENTIALS.mkdir(
@@ -120,14 +153,18 @@ def obtener_credenciales():
         )
 
         print(
-            f"[OK] Credenciales guardadas en:\n{TOKEN_FILE}"
+            "[OK] Credenciales guardadas en:"
+        )
+
+        print(
+            TOKEN_FILE
         )
 
     return credenciales
 
 
 # ============================================================
-# CREAR SERVICIO DE YOUTUBE
+# CREAR SERVICIO
 # ============================================================
 
 def obtener_servicio_youtube():
@@ -135,15 +172,35 @@ def obtener_servicio_youtube():
     Crea el cliente de la API de YouTube.
     """
 
-    credenciales = obtener_credenciales()
+    credenciales = (
+        obtener_credenciales()
+    )
 
-    youtube = build(
+    return build(
         "youtube",
         "v3",
         credentials=credenciales
     )
 
-    return youtube
+
+# ============================================================
+# NORMALIZAR RUTA
+# ============================================================
+
+def normalizar_ruta(ruta):
+    """
+    Convierte una entrada en Path.
+
+    También elimina comillas que pueden quedar
+    pegadas cuando se copia una ruta desde PowerShell.
+    """
+
+    return Path(
+        str(ruta)
+        .strip()
+        .strip('"')
+        .strip("'")
+    )
 
 
 # ============================================================
@@ -161,36 +218,16 @@ def subir_video(
     """
     Sube un video a YouTube.
 
-    Parámetros:
-        ruta_video:
-            Ruta del archivo MP4.
-
-        titulo:
-            Título del video.
-
-        descripcion:
-            Descripción del video.
-
-        tags:
-            Lista de etiquetas.
-
-        categoria_id:
-            Categoría de YouTube.
-            22 = People & Blogs.
-
-        privacidad:
-            "private"
-            "unlisted"
-            "public"
-
     Retorna:
         video_id
     """
 
-    ruta_video = Path(ruta_video)
+    ruta_video = normalizar_ruta(
+        ruta_video
+    )
 
     # --------------------------------------------------------
-    # Validar archivo
+    # Validar video
     # --------------------------------------------------------
 
     if not ruta_video.exists():
@@ -206,45 +243,56 @@ def subir_video(
         )
 
     # --------------------------------------------------------
-    # Añadir #Shorts si no existe
+    # Añadir #Shorts
     # --------------------------------------------------------
 
     if (
         "#shorts" not in titulo.lower()
-        and "#shorts" not in descripcion.lower()
+        and
+        "#shorts" not in descripcion.lower()
     ):
 
         descripcion = (
             descripcion.rstrip()
-            + "\n\n#Shorts"
+            +
+            "\n\n#Shorts"
         ).strip()
 
     # --------------------------------------------------------
-    # Obtener servicio
+    # Servicio
     # --------------------------------------------------------
 
-    youtube = obtener_servicio_youtube()
+    youtube = (
+        obtener_servicio_youtube()
+    )
 
     # --------------------------------------------------------
-    # Información del video
+    # Datos del video
     # --------------------------------------------------------
 
     cuerpo = {
+
         "snippet": {
+
             "title": titulo,
+
             "description": descripcion,
+
             "tags": tags or [],
+
             "categoryId": categoria_id
         },
 
         "status": {
+
             "privacyStatus": privacidad,
+
             "selfDeclaredMadeForKids": False
         }
     }
 
     # --------------------------------------------------------
-    # Preparar archivo
+    # Archivo
     # --------------------------------------------------------
 
     media = MediaFileUpload(
@@ -255,13 +303,17 @@ def subir_video(
     )
 
     # --------------------------------------------------------
-    # Crear solicitud
+    # Solicitud
     # --------------------------------------------------------
 
-    solicitud = youtube.videos().insert(
-        part="snippet,status",
-        body=cuerpo,
-        media_body=media
+    solicitud = (
+        youtube
+        .videos()
+        .insert(
+            part="snippet,status",
+            body=cuerpo,
+            media_body=media
+        )
     )
 
     # --------------------------------------------------------
@@ -272,9 +324,19 @@ def subir_video(
     print("=" * 60)
     print("SUBIENDO VIDEO A YOUTUBE")
     print("=" * 60)
-    print(f"Archivo: {ruta_video.name}")
-    print(f"Título: {titulo}")
-    print(f"Privacidad: {privacidad}")
+
+    print(
+        f"Archivo: {ruta_video.name}"
+    )
+
+    print(
+        f"Título: {titulo}"
+    )
+
+    print(
+        f"Privacidad: {privacidad}"
+    )
+
     print()
 
     respuesta = None
@@ -283,7 +345,9 @@ def subir_video(
 
         while respuesta is None:
 
-            estado, respuesta = solicitud.next_chunk()
+            estado, respuesta = (
+                solicitud.next_chunk()
+            )
 
             if estado:
 
@@ -298,16 +362,21 @@ def subir_video(
     except HttpError as error:
 
         print()
-        print("[ERROR] YouTube rechazó la subida.")
+        print(
+            "[ERROR] YouTube rechazó la subida."
+        )
+
         print(error)
 
         raise
 
     # --------------------------------------------------------
-    # Obtener ID
+    # Video ID
     # --------------------------------------------------------
 
-    video_id = respuesta.get("id")
+    video_id = respuesta.get(
+        "id"
+    )
 
     if not video_id:
 
@@ -317,16 +386,158 @@ def subir_video(
         )
 
     url = (
-        f"https://www.youtube.com/shorts/{video_id}"
+        "https://www.youtube.com/shorts/"
+        f"{video_id}"
     )
 
     print()
-    print("[OK] Video subido correctamente.")
-    print(f"[OK] Video ID: {video_id}")
-    print(f"[OK] URL: {url}")
+    print(
+        "[OK] Video subido correctamente."
+    )
+
+    print(
+        f"[OK] Video ID: {video_id}"
+    )
+
+    print(
+        f"[OK] URL: {url}"
+    )
+
     print()
 
     return video_id
+
+
+# ============================================================
+# CONFIGURAR MINIATURA
+# ============================================================
+
+def configurar_miniatura(
+    video_id,
+    ruta_imagen
+):
+    """
+    Establece una imagen como miniatura personalizada
+    del video ya subido.
+
+    Retorna True si la operación termina correctamente.
+    """
+
+    ruta_imagen = normalizar_ruta(
+        ruta_imagen
+    )
+
+    # --------------------------------------------------------
+    # Validar imagen
+    # --------------------------------------------------------
+
+    if not ruta_imagen.exists():
+
+        raise FileNotFoundError(
+            "No se encontró la imagen para "
+            f"la miniatura:\n{ruta_imagen}"
+        )
+
+    if ruta_imagen.suffix.lower() not in (
+        ".jpg",
+        ".jpeg",
+        ".png"
+    ):
+
+        raise ValueError(
+            "La miniatura debe ser JPG, JPEG o PNG."
+        )
+
+    # --------------------------------------------------------
+    # Servicio
+    # --------------------------------------------------------
+
+    youtube = (
+        obtener_servicio_youtube()
+    )
+
+    print()
+    print("=" * 60)
+    print("CONFIGURANDO MINIATURA DE YOUTUBE")
+    print("=" * 60)
+
+    print(
+        f"Video ID: {video_id}"
+    )
+
+    print(
+        f"Imagen: {ruta_imagen.name}"
+    )
+
+    print()
+
+    # --------------------------------------------------------
+    # MIME
+    # --------------------------------------------------------
+
+    mime_types = {
+
+        ".jpg":
+            "image/jpeg",
+
+        ".jpeg":
+            "image/jpeg",
+
+        ".png":
+            "image/png"
+    }
+
+    mime_type = (
+        mime_types[
+            ruta_imagen.suffix.lower()
+        ]
+    )
+
+    media = MediaFileUpload(
+        str(ruta_imagen),
+        mimetype=mime_type
+    )
+
+    # --------------------------------------------------------
+    # Subir miniatura
+    # --------------------------------------------------------
+
+    try:
+
+        respuesta = (
+            youtube
+            .thumbnails()
+            .set(
+                videoId=video_id,
+                media_body=media
+            )
+            .execute()
+        )
+
+    except HttpError as error:
+
+        print()
+        print(
+            "[ERROR] YouTube no pudo "
+            "configurar la miniatura."
+        )
+
+        print(error)
+
+        raise
+
+    if not respuesta:
+
+        raise RuntimeError(
+            "YouTube no devolvió respuesta "
+            "al configurar la miniatura."
+        )
+
+    print(
+        "[OK] Miniatura configurada correctamente."
+    )
+
+    return True
 
 
 # ============================================================

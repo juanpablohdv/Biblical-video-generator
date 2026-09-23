@@ -224,7 +224,7 @@ def crear_clips_subtitulos(
             .with_start(subtitulo["inicio"])
             .with_duration(duracion)
             .with_position(
-                ("center", video_height - 500)
+                ("center", video_height - clip.h - 200)
             )
         )
 

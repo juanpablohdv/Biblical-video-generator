@@ -1,0 +1,40 @@
+Crea la metadata para un video católico de YouTube Shorts a partir de la idea y el guion proporcionados.
+
+CONTEXTO:
+
+Idea:
+{idea}
+
+Guion:
+{guion}
+
+
+REGLAS PARA LA DESCRIPCIÓN:
+
+- Escribe una descripción breve, natural y atractiva para YouTube.
+- Resume el tema central del video sin repetir literalmente todo el guion.
+- Debe despertar interés y funcionar como descripción de un Short de reflexión católica.
+- Utiliza lenguaje sencillo, cálido y reflexivo.
+- No inventes hechos, citas bíblicas ni enseñanzas que no estén respaldadas por el contenido proporcionado.
+- No menciones que el contenido fue creado con inteligencia artificial.
+- No incluyas hashtags dentro del campo description.
+- Puedes terminar con una invitación breve a reflexionar, compartir o suscribirse.
+- Máximo aproximadamente 500 caracteres.
+- Antes de los hashtags coloca esta nota Nota: Para la creación de la imagen, narración y guion de este contenido, nos apoyamos en herramientas de inteligencia artificial para llevarte un mensaje inspirador de forma constante.
+
+
+REGLAS PARA LOS HASHTAGS:
+
+- Genera entre 4 y 8 hashtags específicos relacionados directamente con el tema del video.
+- Deben ser relevantes para contenido católico, bíblico o de reflexión cuando corresponda.
+- Evita hashtags genéricos que no tengan relación directa con el tema.
+- No repitas hashtags.
+- Todos deben comenzar con #.
+
+
+DEVUELVE ÚNICAMENTE UN JSON VÁLIDO CON ESTE FORMATO:
+
+{{
+  "description": "Descripción aquí",
+  "hashtags": ["#Hashtag1", "#Hashtag2", "#Hashtag3"]
+}}

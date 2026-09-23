@@ -3,7 +3,6 @@ FUNCIONES PARA MANEJAR LA BASE DE DATOS DE IDEAS
 """
 
 import sqlite3
-from datetime import datetime
 from pathlib import Path
 
 
@@ -35,6 +34,12 @@ ESTADOS = (
     "IMAGENES",
     "VOZ",
     "V_FINAL",
+    "METADATA",
+    "SUBIDO",
+
+    # Estado antiguo.
+    # Se conserva para compatibilidad con
+    # registros de versiones anteriores.
     "COMPLETADA"
 )
 
@@ -52,19 +57,23 @@ def conectar():
 
 
 # ==========================================================
-# CREAR TABLA
+# CREAR / ACTUALIZAR TABLA
 # ==========================================================
 
 def crear_tabla():
     """
     Crea la tabla de ideas si todavía no existe.
 
-    También comprueba que existan las columnas necesarias
-    para versiones anteriores de la base de datos.
+    También actualiza bases de datos creadas
+    con versiones anteriores del programa.
     """
 
     conn = conectar()
     cursor = conn.cursor()
+
+    # ------------------------------------------------------
+    # Crear tabla si no existe
+    # ------------------------------------------------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS ideas (
@@ -74,23 +83,28 @@ def crear_tabla():
             estado TEXT DEFAULT 'IDEA',
             fecha_creacion TEXT,
             fecha_actualizacion TEXT,
-            error TEXT
+            error TEXT,
+            youtube_video_id TEXT,
+            youtube_url TEXT,
+            youtube_thumbnail_ok INTEGER DEFAULT 0
         )
     """)
 
     # ------------------------------------------------------
-    # Comprobar columnas existentes
+    # Obtener columnas existentes
     # ------------------------------------------------------
 
-    cursor.execute("PRAGMA table_info(ideas)")
+    cursor.execute(
+        "PRAGMA table_info(ideas)"
+    )
 
-    columnas = [
+    columnas = {
         fila[1]
         for fila in cursor.fetchall()
-    ]
+    }
 
     # ------------------------------------------------------
-    # Agregar columna error si es una BD antigua
+    # Columnas antiguas
     # ------------------------------------------------------
 
     if "error" not in columnas:
@@ -100,10 +114,6 @@ def crear_tabla():
             ADD COLUMN error TEXT
         """)
 
-    # ------------------------------------------------------
-    # Agregar fecha_creacion si faltara
-    # ------------------------------------------------------
-
     if "fecha_creacion" not in columnas:
 
         cursor.execute("""
@@ -111,15 +121,36 @@ def crear_tabla():
             ADD COLUMN fecha_creacion TEXT
         """)
 
-    # ------------------------------------------------------
-    # Agregar fecha_actualizacion si faltara
-    # ------------------------------------------------------
-
     if "fecha_actualizacion" not in columnas:
 
         cursor.execute("""
             ALTER TABLE ideas
             ADD COLUMN fecha_actualizacion TEXT
+        """)
+
+    # ------------------------------------------------------
+    # NUEVAS COLUMNAS DE YOUTUBE
+    # ------------------------------------------------------
+
+    if "youtube_video_id" not in columnas:
+
+        cursor.execute("""
+            ALTER TABLE ideas
+            ADD COLUMN youtube_video_id TEXT
+        """)
+
+    if "youtube_url" not in columnas:
+
+        cursor.execute("""
+            ALTER TABLE ideas
+            ADD COLUMN youtube_url TEXT
+        """)
+
+    if "youtube_thumbnail_ok" not in columnas:
+
+        cursor.execute("""
+            ALTER TABLE ideas
+            ADD COLUMN youtube_thumbnail_ok INTEGER DEFAULT 0
         """)
 
     conn.commit()
@@ -179,10 +210,14 @@ def guardar_idea(texto):
 
 def obtener_idea_incompleta():
     """
-    Busca una idea que ya comenzó a procesarse pero
-    todavía no ha llegado al video final.
+    Busca una idea que ya comenzó a procesarse
+    pero todavía no ha terminado.
 
-    Se excluyen IDEA y COMPLETADA.
+    Se excluyen:
+
+        IDEA
+        SUBIDO
+        COMPLETADA
 
     La idea más antigua se procesa primero.
     """
@@ -191,7 +226,11 @@ def obtener_idea_incompleta():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, texto, guion, estado
+        SELECT
+            id,
+            texto,
+            guion,
+            estado
         FROM ideas
         WHERE estado IN (
             'GUION',
@@ -200,7 +239,9 @@ def obtener_idea_incompleta():
             'OPTIMIZADO',
             'PROMPTS',
             'IMAGENES',
-            'VOZ'
+            'VOZ',
+            'V_FINAL',
+            'METADATA'
         )
         ORDER BY id ASC
         LIMIT 1
@@ -227,7 +268,11 @@ def obtener_idea_no_usada():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, texto, guion, estado
+        SELECT
+            id,
+            texto,
+            guion,
+            estado
         FROM ideas
         WHERE estado = 'IDEA'
         ORDER BY id ASC
@@ -262,7 +307,10 @@ def obtener_idea_por_id(idea_id):
             estado,
             fecha_creacion,
             fecha_actualizacion,
-            error
+            error,
+            youtube_video_id,
+            youtube_url,
+            youtube_thumbnail_ok
         FROM ideas
         WHERE id = ?
     """, (idea_id,))
@@ -275,7 +323,7 @@ def obtener_idea_por_id(idea_id):
 
 
 # ==========================================================
-# GUARDAR GUION EN LA BASE DE DATOS
+# GUARDAR GUION
 # ==========================================================
 
 def guardar_guion(idea_id, guion):
@@ -308,19 +356,6 @@ def guardar_guion(idea_id, guion):
 def modificar_estado(idea_id, estado):
     """
     Cambia el estado de una idea.
-
-    Estados permitidos:
-
-    IDEA
-    GUION
-    ESCENAS
-    FICHAS
-    OPTIMIZADO
-    PROMPTS
-    IMAGENES
-    VOZ
-    V_FINAL
-    COMPLETADA
     """
 
     if estado not in ESTADOS:
@@ -353,6 +388,96 @@ def modificar_estado(idea_id, estado):
 
 
 # ==========================================================
+# GUARDAR INFORMACIÓN DE YOUTUBE
+# ==========================================================
+
+def guardar_youtube(
+    idea_id,
+    video_id,
+    youtube_url
+):
+    """
+    Guarda la información del video subido a YouTube.
+
+    No cambia automáticamente el estado.
+    """
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE ideas
+        SET
+            youtube_video_id = ?,
+            youtube_url = ?,
+            fecha_actualizacion = datetime('now'),
+            error = NULL
+        WHERE id = ?
+    """, (
+        video_id,
+        youtube_url,
+        idea_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    print(
+        f"[DB] YouTube guardado para idea #{idea_id}"
+    )
+
+    print(
+        f"[DB] Video ID: {video_id}"
+    )
+
+    print(
+        f"[DB] URL: {youtube_url}"
+    )
+
+
+# ==========================================================
+# MARCAR MINIATURA COMO CONFIGURADA
+# ==========================================================
+
+def marcar_miniatura_youtube(
+    idea_id,
+    configurada=True
+):
+    """
+    Registra si la miniatura de YouTube
+    fue configurada correctamente.
+    """
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE ideas
+        SET
+            youtube_thumbnail_ok = ?,
+            fecha_actualizacion = datetime('now')
+        WHERE id = ?
+    """, (
+        1 if configurada else 0,
+        idea_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    estado_texto = (
+        "OK"
+        if configurada
+        else "PENDIENTE"
+    )
+
+    print(
+        f"[DB] Miniatura YouTube #{idea_id}: "
+        f"{estado_texto}"
+    )
+
+
+# ==========================================================
 # REGISTRAR ERROR
 # ==========================================================
 
@@ -360,9 +485,6 @@ def registrar_error(idea_id, error):
     """
     Guarda información sobre un error sin cambiar
     el estado actual de la idea.
-
-    Esto es importante porque si falla un paso,
-    podremos volver a continuar desde ese mismo estado.
     """
 
     conn = conectar()
@@ -439,7 +561,7 @@ def contar_ideas_no_usadas():
 def contar_ideas_incompletas():
     """
     Cuenta las ideas que ya comenzaron pero todavía
-    no han llegado al video final.
+    no han llegado a SUBIDO.
     """
 
     conn = conectar()
@@ -455,7 +577,9 @@ def contar_ideas_incompletas():
             'OPTIMIZADO',
             'PROMPTS',
             'IMAGENES',
-            'VOZ'
+            'VOZ',
+            'V_FINAL',
+            'METADATA'
         )
     """)
 
@@ -480,7 +604,8 @@ def actualizar_fecha_act(idea_id):
 
     cursor.execute("""
         UPDATE ideas
-        SET fecha_actualizacion = datetime('now')
+        SET
+            fecha_actualizacion = datetime('now')
         WHERE id = ?
     """, (idea_id,))
 
