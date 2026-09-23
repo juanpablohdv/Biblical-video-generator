@@ -41,6 +41,12 @@ python/data/
 
 python/output/
 
+# =========================
+# CREDENCIALES
+# =========================
+
+python/credentials/
+
 
 # =====================================
 # EDITORES
