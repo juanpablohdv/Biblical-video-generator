@@ -35,6 +35,9 @@ from ideas_db import (
 
 from ideas_generator import generar_ideas
 
+from youtube_uploader import subir_video
+
+
 from guion_generator import generate_guion
 
 from manejo_guion import (
