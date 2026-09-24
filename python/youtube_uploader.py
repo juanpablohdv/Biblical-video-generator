@@ -286,7 +286,7 @@ def subir_video(
         "status": {
 
             "privacyStatus": privacidad,
-
+            "containsSyntheticMedia": True,
             "selfDeclaredMadeForKids": False
         }
     }
