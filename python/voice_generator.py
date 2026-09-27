@@ -37,7 +37,6 @@ def generate_voice(text, idea_id):
         model="gpt-4o-mini-tts",
         voice="alloy",
         input=text,
-        speed=0.92,
         instructions=(
             "Habla en español latinoamericano con una voz masculina cálida, "
             "natural y cercana. Mantén un tono reflexivo, sereno y ligeramente solemne, "
