@@ -1154,205 +1154,341 @@ def ejecutar_pipeline():
 
 
 # ==========================================================
-# REGENERAR VIDEOS EXISTENTES
+# EDITAR IDEAS EXISTENTES
 # ==========================================================
 
-def regenerar_videos_existentes():
-    """
-    Regenera todos los videos que ya tienen
-    imágenes, voz y guion.
-
-    IMPORTANTE:
-
-    Esta opción solamente ejecuta MoviePy.
-
-    NO:
-        - genera ideas
-        - genera guiones
-        - genera imágenes
-        - genera voces
-        - genera metadata
-        - sube videos a YouTube
-    """
+def editar_idea_existente():
 
     print()
     print("=" * 60)
     print(
-        "       REGENERACIÓN DE VIDEOS EXISTENTES"
+        "              EDITAR IDEA EXISTENTE"
     )
     print("=" * 60)
     print()
 
-    if not DIR_IDEAS.exists():
+    # ------------------------------------------------------
+    # PEDIR ID DE LA IDEA
+    # ------------------------------------------------------
 
-        print(
-            f"[INFO] No existe la carpeta: "
-            f"{DIR_IDEAS}"
-        )
+    while True:
 
-        return
-
-    carpetas = sorted(
-        DIR_IDEAS.glob(
-            "idea_*"
-        )
-    )
-
-    if not carpetas:
-
-        print(
-            "[INFO] No se encontraron ideas."
-        )
-
-        return
-
-    procesadas = 0
-    errores = 0
-    omitidas = 0
-
-    for carpeta in carpetas:
-
-        # --------------------------------------------------
-        # Obtener ID
-        # --------------------------------------------------
+        entrada = input(
+            "¿Qué idea quieres editar? "
+        ).strip()
 
         try:
 
-            idea_id = int(
-                carpeta.name.split(
-                    "_"
-                )[1]
-            )
+            idea_id = int(entrada)
 
-        except (
-            ValueError,
-            IndexError
-        ):
-
-            continue
-
-        ruta_images = (
-            carpeta /
-            "images"
-        )
-
-        ruta_voz = (
-            carpeta /
-            f"voz_{idea_id}.mp3"
-        )
-
-        ruta_guion = (
-            carpeta /
-            f"guion_{idea_id}.txt"
-        )
-
-        # --------------------------------------------------
-        # Verificar archivos
-        # --------------------------------------------------
-
-        imagenes = list(
-            ruta_images.glob(
-                "scene_*.png"
-            )
-        ) if ruta_images.exists() else []
-
-        if not imagenes:
+        except ValueError:
 
             print(
-                f"[SKIP] Idea #{idea_id}: "
-                "no tiene imágenes."
+                "[ERROR] Debes introducir un número."
             )
-
-            omitidas += 1
 
             continue
 
-        if not ruta_voz.exists():
+        break
 
-            print(
-                f"[SKIP] Idea #{idea_id}: "
-                "no tiene narración."
-            )
+    # ------------------------------------------------------
+    # BUSCAR IDEA EN LA BD
+    # ------------------------------------------------------
 
-            omitidas += 1
+    registro = obtener_idea_por_id(
+        idea_id
+    )
 
-            continue
-
-        if not ruta_guion.exists():
-
-            print(
-                f"[SKIP] Idea #{idea_id}: "
-                "no tiene guion."
-            )
-
-            omitidas += 1
-
-            continue
+    if not registro:
 
         print()
-        print("-" * 60)
+
         print(
-            f"[REGEN] Regenerando idea #{idea_id}"
+            f"[ERROR] No existe la idea #{idea_id}."
         )
-        print("-" * 60)
 
-        try:
+        return
 
-            ruta_video = (
-                generar_video(
-                    idea_id
-                )
-            )
+    # ------------------------------------------------------
+    # DATOS DE LA IDEA
+    # ------------------------------------------------------
 
-            procesadas += 1
-
-            print(
-                f"[OK] Idea #{idea_id} regenerada:"
-            )
-
-            print(
-                ruta_video
-            )
-
-        except Exception as error:
-
-            errores += 1
-
-            print()
-            print(
-                f"[ERROR] Falló la "
-                f"regeneración de la idea #{idea_id}"
-            )
-
-            print(
-                f"{type(error).__name__}: "
-                f"{error}"
-            )
+    texto_idea = registro[1]
+    estado = registro[3]
 
     print()
-    print("=" * 60)
+
     print(
-        "         REGENERACIÓN TERMINADA"
+        f"[INFO] Idea #{idea_id}:"
     )
-    print("=" * 60)
+
+    print(
+        f"       {texto_idea}"
+    )
+
     print()
 
     print(
-        f"[OK] Videos regenerados: "
-        f"{procesadas}"
-    )
-
-    print(
-        f"[SKIP] Videos omitidos: "
-        f"{omitidas}"
-    )
-
-    print(
-        f"[ERROR] Errores: "
-        f"{errores}"
+        f"[INFO] Estado actual: {estado}"
     )
 
     print()
+
+    # ------------------------------------------------------
+    # MOSTRAR ESTADO DE LOS PASOS
+    # ------------------------------------------------------
+
+    mostrar_estado_idea(
+        idea_id,
+        estado
+    )
+
+    print()
+
+    # ------------------------------------------------------
+    # ELEGIR PASO
+    # ------------------------------------------------------
+
+    paso = seleccionar_paso_edicion(
+        estado
+    )
+
+    if paso is None:
+
+        print(
+            "[INFO] Operación cancelada."
+        )
+
+        return
+
+    print()
+
+    # ------------------------------------------------------
+    # ELEGIR MODO
+    # ------------------------------------------------------
+
+    modo = input(
+        "¿Qué deseas hacer?\n"
+        "\n"
+        "1 - Rehacer solamente este paso\n"
+        "2 - Rehacer desde este paso y continuar\n"
+        "0 - Cancelar\n"
+        "\n"
+        "Selecciona una opción: "
+    ).strip()
+
+    if modo == "0":
+
+        print(
+            "[INFO] Operación cancelada."
+        )
+
+        return
+
+    if modo not in (
+        "1",
+        "2"
+    ):
+
+        print(
+            "[ERROR] Opción no válida."
+        )
+
+        return
+
+    # ------------------------------------------------------
+    # EJECUTAR
+    # ------------------------------------------------------
+
+    ejecutar_edicion_idea(
+        idea_id,
+        paso,
+        modo
+    )
+
+def mostrar_estado_idea(
+    idea_id,
+    estado
+):
+
+    pasos = [
+        ("IDEA", "Idea"),
+        ("GUION", "Guion"),
+        ("ESCENAS", "Escenas"),
+        ("FICHAS", "Fichas de personajes"),
+        ("OPTIMIZADO", "Optimización"),
+        ("PROMPTS", "Prompts de imágenes"),
+        ("IMAGENES", "Imágenes"),
+        ("VOZ", "Narración"),
+        ("V_FINAL", "Video"),
+        ("METADATA", "Metadata"),
+        ("SUBIDO", "YouTube")
+    ]
+
+    estados = {
+        "IDEA": 0,
+        "GUION": 1,
+        "ESCENAS": 2,
+        "FICHAS": 3,
+        "OPTIMIZADO": 4,
+        "PROMPTS": 5,
+        "IMAGENES": 6,
+        "VOZ": 7,
+        "V_FINAL": 8,
+        "METADATA": 9,
+        "SUBIDO": 10
+    }
+
+    indice_actual = estados.get(
+        estado,
+        -1
+    )
+
+    print(
+        "ESTADO DE LA IDEA:"
+    )
+
+    print()
+
+    for indice, (
+        estado_paso,
+        nombre
+    ) in enumerate(pasos):
+
+        if indice <= indice_actual:
+
+            simbolo = "[OK]"
+
+        else:
+
+            simbolo = "[--]"
+
+        print(
+            f"{indice + 1:2}. "
+            f"{simbolo} "
+            f"{nombre}"
+        )
+
+def seleccionar_paso_edicion(
+    estado
+):
+
+    pasos = [
+        ("IDEA", "Idea"),
+        ("GUION", "Guion"),
+        ("ESCENAS", "Escenas"),
+        ("FICHAS", "Fichas"),
+        ("OPTIMIZADO", "Optimización"),
+        ("PROMPTS", "Prompts"),
+        ("IMAGENES", "Imágenes"),
+        ("VOZ", "Narración"),
+        ("V_FINAL", "Video"),
+        ("METADATA", "Metadata"),
+        ("SUBIDO", "Subir video")
+    ]
+
+    estados = {
+        "IDEA": 0,
+        "GUION": 1,
+        "ESCENAS": 2,
+        "FICHAS": 3,
+        "OPTIMIZADO": 4,
+        "PROMPTS": 5,
+        "IMAGENES": 6,
+        "VOZ": 7,
+        "V_FINAL": 8,
+        "METADATA": 9,
+        "SUBIDO": 10
+    }
+
+    indice_actual = estados.get(
+        estado,
+        -1
+    )
+
+    print(
+        "¿QUÉ PASO QUIERES EDITAR?"
+    )
+
+    print()
+
+    for indice, (
+        estado_paso,
+        nombre
+    ) in enumerate(pasos):
+
+        if indice <= indice_actual:
+
+            print(
+                f"{indice + 1}. "
+                f"{nombre} "
+                f"[HECHO]"
+            )
+
+        elif indice == indice_actual + 1:
+
+            print(
+                f"{indice + 1}. "
+                f"{nombre} "
+                f"[SIGUIENTE]"
+            )
+
+        else:
+
+            print(
+                f"{indice + 1}. "
+                f"{nombre} "
+                f"[NO DISPONIBLE]"
+            )
+
+    print()
+
+    entrada = input(
+        "Selecciona el paso (0 para cancelar): "
+    ).strip()
+
+    if entrada == "0":
+
+        return None
+
+    try:
+
+        numero = int(
+            entrada
+        )
+
+    except ValueError:
+
+        print(
+            "[ERROR] Debes introducir un número."
+        )
+
+        return None
+
+    if numero < 1 or numero > len(pasos):
+
+        print(
+            "[ERROR] Paso no válido."
+        )
+
+        return None
+
+    indice = numero - 1
+
+    # No permitimos saltar pasos.
+    if indice > indice_actual + 1:
+
+        print()
+
+        print(
+            "[ERROR] Ese paso todavía no "
+            "está disponible."
+        )
+
+        return None
+
+    return pasos[indice][0]
+
 
 
 # ==========================================================
@@ -1463,16 +1599,20 @@ def main():
 
             try:
 
-                regenerar_videos_existentes()
+                editar_idea_existente()
 
             except Exception as error:
 
                 print()
+
                 print("=" * 60)
+
                 print(
-                    "          ERROR EN REGENERACIÓN"
+                    "          ERROR AL EDITAR IDEA"
                 )
+
                 print("=" * 60)
+
                 print()
 
                 print(
