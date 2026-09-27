@@ -3,6 +3,7 @@ GENERADOR DE VIDEO A PARTIR DE IMÁGENES,
 NARRACIÓN, MÚSICA Y SUBTÍTULOS
 """
 
+from email.mime import audio
 from pathlib import Path
 import re
 
@@ -414,6 +415,8 @@ def generar_video(idea_id):
         method="compose"
     )
 
+    print(f"[DEBUG] Duración audio: {audio.duration:.3f}s")
+    print(f"[DEBUG] Duración video base: {video_base.duration:.3f}s")
     print(
         f"[INFO] Resolución del video: "
         f"{video_base.w}x{video_base.h}"
@@ -453,6 +456,8 @@ def generar_video(idea_id):
             *clips_subtitulos
         ]
     )
+    
+    print(f"[DEBUG] Duración video compuesto: {video.duration:.3f}s")
 
     # ======================================================
     # SELECCIONAR MÚSICA
