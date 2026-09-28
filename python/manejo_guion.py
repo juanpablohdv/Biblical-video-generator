@@ -340,10 +340,9 @@ Visual description:
 """
 
         prompt_final = f"""
-{identidad_visual}
-
 SCENE:
 {descripcion}
+{identidad_visual}
 
 CHARACTERS:
 {personajes_prompt}
