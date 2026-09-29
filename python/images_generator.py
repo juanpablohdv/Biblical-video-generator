@@ -34,7 +34,7 @@ def generar_imagen(prompt, ruta_salida):
     print(f"[INFO] Generando imagen: {ruta_salida.name}")
 
     response = client.images.generate(
-        model="gpt-image-1",
+        model="gpt-image-2",
         prompt=prompt,
         size="1024x1536"
     )
