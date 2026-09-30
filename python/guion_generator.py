@@ -31,7 +31,7 @@ def generate_guion(idea, idea_id):
     prompt = cargar_prompts("guion", idea=idea)
 
     reponse = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-6-luna",
         messages=[
             {"role": "user", "content": prompt}
         ]

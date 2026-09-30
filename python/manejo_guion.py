@@ -54,7 +54,7 @@ def generate_scenes(guion, idea_id):
     prompt = cargar_prompts("scenes", guion=guion)
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-6-luna",
         messages=[
             {
                 "role": "user",
@@ -142,7 +142,7 @@ def crear_fichas(scenes):
             try:
 
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-6-luna",
                     response_format={"type": "json_object"},
                     messages=[
                         {
@@ -254,7 +254,7 @@ def optimizador_fichas(scenes, idea_id):
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-6-luna",
             response_format={"type": "json_object"},
             messages=[
                 {
