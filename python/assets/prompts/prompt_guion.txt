@@ -7,6 +7,7 @@ REGLAS IMPORTANTES:
 - Debe enganchar desde la primera frase.
 - Usa preguntas o datos curiosos.
 - No uses paréntesis, corchetes ni indicaciones visuales.
+- Termina el guion diciendo "Comenta Amén para que este video llegue a personas que lo necesiten"
 
 ESTRUCTURA:
 1. Hook inicial (pregunta o dato sorprendente).
