@@ -656,40 +656,89 @@ def actualizar_fecha_act(idea_id):
 # OBTENER LAS ULTIMAS 14 IDEAS GENERICAS
 # ==========================================================
 
+
+# ==========================================================
+# OBTENER LAS ULTIMAS 14 IDEAS PARA EVITAR REPETICIONES
+# ==========================================================
+
 def obtener_ultimas_14_genericas():
     """
-    Devuelve las 14 ideas GENERICAS más recientes.
+    Obtiene hasta 14 ideas para analizar posibles repeticiones.
 
-    Retorna una lista de diccionarios con el ID,
-    el texto y la fecha de publicación de cada idea.
+    Prioridad:
+    1. Ideas clasificadas como GENERICA.
+    2. Si faltan, ideas sin clasificacion reconocida.
+
+    Las ideas ESPECIFICA nunca se utilizan como reemplazo.
     """
 
     conn = conectar()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT
-            id,
-            texto,
-            tematica,
-            fecha_publicacion
-        FROM ideas
-        WHERE UPPER(TRIM(tematica)) = 'GENERICA'
-        ORDER BY id DESC
-        LIMIT 14
-    """)
+    try:
+        # Primero: obtener las 14 genericas mas recientes.
+        cursor.execute("""
+            SELECT
+                id,
+                texto,
+                tematica,
+                fecha_publicacion
+            FROM ideas
+            WHERE UPPER(TRIM(COALESCE(tematica, ''))) = 'GENERICA'
+            ORDER BY id DESC
+            LIMIT 14
+        """)
 
-    filas = cursor.fetchall()
+        ideas_genericas = [
+            dict(fila)
+            for fila in cursor.fetchall()
+        ]
 
-    ideas = [
-        dict(fila)
-        for fila in filas
-    ]
+        ideas = list(ideas_genericas)
 
-    conn.close()
+        # Si faltan ideas, completar con registros sin
+        # clasificacion GENERICA ni ESPECIFICA.
+        faltantes = 14 - len(ideas)
 
-    return ideas
+        if faltantes > 0:
+            cursor.execute("""
+                SELECT
+                    id,
+                    texto,
+                    tematica,
+                    fecha_publicacion
+                FROM ideas
+                WHERE UPPER(TRIM(COALESCE(tematica, '')))
+                    NOT IN ('GENERICA', 'ESPECIFICA')
+                ORDER BY id DESC
+                LIMIT ?
+            """, (faltantes,))
+
+            ideas_sin_clasificar = [
+                dict(fila)
+                for fila in cursor.fetchall()
+            ]
+
+            ideas.extend(ideas_sin_clasificar)
+
+        # Presentar el historial en orden cronologico inverso.
+        ideas.sort(
+            key=lambda idea: idea["id"],
+            reverse=True
+        )
+
+        print(
+            f"[DB] Historial tematico recuperado: "
+            f"{len(ideas)} ideas "
+            f"({len(ideas_genericas)} genericas y "
+            f"{len(ideas) - len(ideas_genericas)} sin clasificar)."
+        )
+
+        return ideas
+
+    finally:
+        conn.close()
 
 
 # ==========================================================
