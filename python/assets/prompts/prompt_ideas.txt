@@ -1,144 +1,98 @@
-Genera exactamente 21 ideas de videos catolicos atractivos para YouTube Shorts o TikTok. Las ideas deben ser adecuadas para videos cortos y despertar curiosidad sin recurrir a afirmaciones falsas, exageraciones engañosas ni sensacionalismo.
+Genera exactamente 21 ideas atractivas para YouTube Shorts o TikTok, respetando la programación y las siguientes reglas.
 
-Devuelve exclusivamente un JSON valido, sin Markdown ni texto adicional, con la estructura indicada al final.
+1. REGLAS DOCTRINALES Y DE CONTENIDO
 
-==========================================================
-1. REGLAS DOCTRINALES Y FUENTES DE REFERENCIA
-==========================================================
+- Basa todo el contenido en la doctrina de la Iglesia católica, la Biblia católica y el Catecismo.
+- Respeta el canon católico de las Escrituras, incluidos los libros deuterocanónicos.
+- No presentes doctrinas protestantes u otras interpretaciones contrarias a la enseñanza católica como si fueran católicas.
+- No inventes acontecimientos, personajes, milagros, citas ni enseñanzas. No atribuyas a la Biblia afirmaciones que no contiene.
+- Distingue los hechos históricos documentados de las tradiciones piadosas y devociones populares.
+- Utiliza lenguaje sencillo, directo y atractivo, sin engaños ni sensacionalismo.
 
-- Todo el contenido debe estar basado exclusivamente en la doctrina y enseñanza de la Iglesia Catolica.
-- Utiliza como referencia la Biblia Catolica y el Catecismo de la Iglesia Catolica.
-- Para contenidos biblicos, respeta el canon de las Sagradas Escrituras reconocido por la Iglesia Catolica, incluyendo los libros deuterocanonicos.
-- No utilices interpretaciones, doctrinas, tradiciones o afirmaciones propias de denominaciones protestantes, evangelicas u otras variantes del cristianismo cuando contradigan la enseñanza catolica.
-- No presentes como enseñanza catolica algo que contradiga el Catecismo de la Iglesia Catolica.
-- No inventes acontecimientos, personajes, milagros, citas biblicas ni enseñanzas.
-- No atribuyas a la Biblia afirmaciones que no aparecen en ella.
-- Cuando un tema no este explicado explicitamente en la Biblia, debe ser compatible con la doctrina catolica y no presentarse como una cita o hecho biblico.
-- Respeta especialmente las enseñanzas catolicas sobre Dios, la Santisima Trinidad, Jesucristo, la Virgen Maria, los santos, los sacramentos, la Iglesia, la salvacion, los angeles, los demonios, el pecado y la vida eterna.
-- Distingue los hechos historicos documentados de las tradiciones piadosas o devociones populares.
+2. PROGRAMACIÓN
 
-==========================================================
-2. PROGRAMACION DE PUBLICACIONES
-==========================================================
-
-La siguiente lista contiene exactamente los espacios de publicacion que debes completar:
+Estos son los espacios de publicación que debes completar:
 
 {programacion}
 
-Cada elemento contiene "fecha_publicacion" y "tematica". Genera una idea por cada elemento, respetando estrictamente el orden, la fecha y la categoria indicada. No cambies, inventes ni reordenes fechas u horarios.
+Genera una idea por cada espacio, respetando exactamente el orden, la fecha, la hora y la temática indicadas. No inventes ni cambies la programación.
 
-La programacion utiliza estos horarios locales:
-- 10:00: idea ESPECIFICA.
-- 14:00: idea ESPECIFICA.
-- 19:00: idea GENERICA.
+- 10:00: ESPECIFICA.
+- 14:00: ESPECIFICA.
+- 19:00: GENERICA.
 
-Puede que el primer espacio disponible sea a las 19:00 o que la lista comience en mitad del dia. En todos los casos, respeta la categoria indicada en cada elemento de la programacion.
+Respeta la temática indicada en cada elemento, incluso si la lista comienza a mitad del día.
 
-==========================================================
-3. FUENTES WEB Y CELEBRACIONES CATOLICAS
-==========================================================
+3. FUENTES Y CELEBRACIONES CATÓLICAS
 
-A continuacion se proporciona texto extraido de las paginas web configuradas:
+Información obtenida de las páginas web configuradas:
 
 {fuentes_web}
 
-Usa esta informacion para identificar las celebraciones relevantes que coincidan con las fechas programadas. Ten en cuenta, segun la informacion disponible:
-- Solemnidades, fiestas y memorias del calendario liturgico.
-- Santos y beatos conmemorados ese dia.
-- Celebraciones y advocaciones marianas.
-- Acontecimientos religiosos o aniversarios relevantes.
-- Tradiciones catolicas ampliamente conocidas, como Navidad, Nochebuena, Nochevieja, Semana Santa, fiestas marianas y celebraciones locales relevantes cuando corresponda.
+Utiliza las fuentes para identificar las celebraciones correspondientes a cada fecha. Considera solemnidades, fiestas litúrgicas, santos y beatos, advocaciones marianas, acontecimientos religiosos y tradiciones conocidas como Navidad, Nochebuena, Nochevieja y Semana Santa.
 
-Prioriza la celebracion mas conocida o significativa para la fecha, en lugar de elegir automaticamente un santo menos conocido cuando exista una celebracion de mayor relevancia. No asumas que todas las celebraciones tienen el mismo rango liturgico.
+Prioriza la celebración más conocida o significativa del día, sin confundir importancia popular con rango litúrgico. Distingue las celebraciones oficiales de las devociones populares y considera las diferencias entre calendarios locales.
 
-Distingue entre celebraciones oficiales del calendario liturgico, conmemoraciones tradicionales y devociones populares. Una fecha puede variar segun el pais o calendario local; no presentes una celebracion local como universal.
+No afirmes que una celebración fue verificada si las fuentes no lo permiten. No inventes fechas, milagros ni reconocimientos oficiales.
 
-Si el texto de las fuentes no permite confirmar una celebracion, no afirmes que fue verificada ni inventes datos. En ese caso, selecciona un tema especifico catolico pertinente a la fecha solo si puedes justificarlo con la informacion disponible; si no, indica de forma prudente la falta de confirmacion en el campo "celebracion".
+4. IDEAS ESPECÍFICAS
 
-==========================================================
-4. IDEAS ESPECIFICAS
-==========================================================
+Para cada espacio ESPECIFICA, crea una idea relacionada con la celebración o acontecimiento religioso más relevante de esa fecha.
 
-Para cada elemento cuya tematica sea ESPECIFICA, crea una idea vinculada con la celebracion, acontecimiento, santo, advocacion mariana o fecha religiosa mas relevante que corresponda a su fecha de publicacion.
+Las dos ideas específicas de un mismo día deben presentar enfoques distintos y complementarios. Por ejemplo, una puede explicar la historia de una aparición mariana y otra centrarse en uno de sus acontecimientos o mensajes documentados.
 
-Las dos ideas especificas de un mismo dia deben tener enfoques distintos y complementarios. Por ejemplo, si la fecha corresponde a una celebracion mariana, una idea puede resumir la aparicion, su contexto y sus mensajes; la otra puede centrarse en un acontecimiento o milagro asociado, siempre que la informacion sea fiable.
+Puedes abordar santos, fiestas litúrgicas, apariciones marianas, milagros reconocidos o tradiciones católicas, siempre con información fiable. Si no puedes confirmar una celebración, indícalo prudentemente en el campo `celebracion`.
 
-Puedes abordar:
-- La historia y el significado de una solemnidad o fiesta.
-- La vida de un santo y sus hechos reconocidos.
-- Una aparicion mariana y sus mensajes reconocidos por la Iglesia, cuando corresponda.
-- El origen de una tradicion catolica.
-- El significado espiritual de una celebracion.
-- Un acontecimiento biblico o historico relacionado con la fecha.
+5. IDEAS GENÉRICAS Y PREVENCIÓN DE REPETICIONES
 
-No inventes milagros ni atribuyas reconocimiento oficial de la Iglesia cuando no tengas base para hacerlo. Evita que las dos ideas del mismo dia sean practicamente la misma idea con un titulo diferente.
+Para cada espacio GENERICA, crea una idea que pueda publicarse cualquier día y que no dependa de una celebración específica.
 
-==========================================================
-5. IDEAS GENERICAS Y PREVENCION DE REPETICIONES
-==========================================================
+Puedes tratar curiosidades bíblicas, enseñanzas de Jesús, personajes de la Biblia, sacramentos, oración, historia de la Iglesia y otros temas de doctrina católica.
 
-Para cada elemento cuya tematica sea GENERICA, crea una idea que pueda publicarse cualquier dia y que no dependa de una celebracion especifica.
-
-Ejemplos de posibles areas tematicas:
-- Curiosidades biblicas.
-- Enseñanzas y palabras de Jesus.
-- Historias de personajes biblicos.
-- Significado de pasajes de las Escrituras.
-- Simbolos y costumbres catolicas.
-- Historia de la Iglesia.
-- Preguntas interesantes sobre la fe catolica.
-- Angeles, sacramentos, oracion y otros temas de doctrina catolica.
-
-No es obligatorio usar estas categorias; busca variedad y temas interesantes.
-
-Historial de las ultimas 14 ideas clasificadas como GENERICA:
+Historial temático de referencia:
 
 {historial_genericas}
 
-Analiza el historial por su tema central, no solamente por las palabras del titulo. No generes ideas que traten esencialmente el mismo tema con una redaccion diferente, aunque cambien la pregunta, el personaje secundario o el enfoque superficial.
+Este historial contiene prioritariamente las últimas ideas clasificadas como GENERICA. Si había menos de 14, se ha completado con ideas antiguas sin clasificación reconocida.
 
-Evita repetir el mismo pasaje, la misma curiosidad, el mismo milagro, la misma enseñanza o el mismo concepto central. Busca un tema sustancialmente diferente. Si hay menos de 14 ideas en el historial, utiliza todas las disponibles.
+Utiliza todas las ideas proporcionadas para evitar repeticiones. Analiza el tema central, no solo el título. No repitas esencialmente la misma historia, enseñanza, pasaje, milagro o curiosidad con palabras diferentes.
 
-Las ideas especificas que aparezcan en el historial no forman parte de esta lista de exclusion, porque el historial proporcionado contiene solo ideas GENERICAS. Aun asi, evita duplicados evidentes dentro de las 21 ideas nuevas.
+Las ideas sin clasificar sirven únicamente como referencia temática: no debes asumir su categoría original ni modificar la categoría de las nuevas ideas.
 
-==========================================================
-6. REGLAS DE REDACCION
-==========================================================
+Busca variedad real entre las siete ideas genéricas y evita duplicados evidentes dentro del lote de 21 ideas.
 
-- Cada idea debe ser una sola pregunta o frase corta.
-- Cada idea debe tener como maximo 15 palabras.
-- No agregues numeracion al texto de la idea.
-- No agregues explicaciones, guiones ni resumenes dentro del campo "texto".
-- Utiliza lenguaje sencillo, directo y natural en español.
-- Los temas deben estar relacionados con la Biblia, la doctrina catolica o la historia de la Iglesia Catolica.
-- Busca ideas curiosas, atractivas y potencialmente compartibles, sin sacrificar la precision religiosa o historica.
-- No uses afirmaciones falsas, titulos engañosos ni sensacionalismo.
-- Evita titulos vagos, repetitivos o demasiado generales.
-- La idea debe poder convertirse en un video corto con contenido suficiente para desarrollarla.
+6. REDACCIÓN
 
-==========================================================
-7. FORMATO JSON OBLIGATORIO
-==========================================================
+- Cada idea debe ser una pregunta o frase corta de máximo 15 palabras.
+- No agregues numeración ni explicaciones dentro del título.
+- Utiliza español sencillo y natural.
+- Cada idea debe permitir desarrollar un video corto interesante.
+- Evita títulos vagos, repetitivos, engañosos o sensacionalistas.
+- Mantén la precisión religiosa e histórica.
 
-Devuelve un objeto JSON con una unica clave llamada "ideas". Debe contener exactamente 21 elementos, en el mismo orden que la programacion.
+7. RESPUESTA JSON
 
-Cada elemento debe contener:
-- "texto": el titulo o pregunta de la idea, con un maximo de 15 palabras.
-- "celebracion": el nombre de la celebracion o tema religioso que fundamenta la idea especifica. Para las ideas genericas, utiliza una cadena vacia.
+Devuelve exclusivamente un JSON válido, sin Markdown ni texto adicional, con una única clave `ideas` y exactamente 21 elementos en el orden de la programación.
 
-El codigo asignara la tematica y la fecha de publicacion a partir de la programacion. No hace falta que las incluyas en los elementos de respuesta.
+Cada elemento debe incluir:
+- `texto`: título o pregunta de máximo 15 palabras.
+- `celebracion`: celebración o tema que fundamenta la idea específica. Para las genéricas, utiliza una cadena vacía.
 
-Ejemplo de estructura (solo ilustrativo; debes devolver 21 elementos):
+El código asignará la temática y la fecha de publicación a partir de la programación; no necesitas incluirlas en la respuesta.
+
+Estructura ilustrativa:
 
 {{
   "ideas": [
     {{
-      "texto": "¿Que sucedio durante la celebracion catolica de esta fecha?",
-      "celebracion": "Nombre de la celebracion"
+      "texto": "¿Qué ocurrió durante esta celebración católica?",
+      "celebracion": "Nombre de la celebración"
     }},
     {{
-      "texto": "¿Que enseñanza de Jesus suele pasar desapercibida?",
+      "texto": "¿Qué enseñanza de Jesús solemos pasar por alto?",
       "celebracion": ""
     }}
   ]
 }}
+
+El ejemplo solo ilustra la estructura. Devuelve exactamente 21 elementos.

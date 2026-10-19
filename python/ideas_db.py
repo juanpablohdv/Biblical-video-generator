@@ -661,15 +661,14 @@ def actualizar_fecha_act(idea_id):
 # OBTENER LAS ULTIMAS 14 IDEAS PARA EVITAR REPETICIONES
 # ==========================================================
 
+
 def obtener_ultimas_14_genericas():
     """
-    Obtiene hasta 14 ideas para analizar posibles repeticiones.
+    Obtiene hasta 14 ideas para prevenir repeticiones.
 
     Prioridad:
-    1. Ideas clasificadas como GENERICA.
-    2. Si faltan, ideas sin clasificacion reconocida.
-
-    Las ideas ESPECIFICA nunca se utilizan como reemplazo.
+    1. Ideas GENERICA más recientes.
+    2. Ideas sin clasificación reconocida, si faltan.
     """
 
     conn = conectar()
@@ -677,37 +676,25 @@ def obtener_ultimas_14_genericas():
     cursor = conn.cursor()
 
     try:
-        # Primero: obtener las 14 genericas mas recientes.
         cursor.execute("""
-            SELECT
-                id,
-                texto,
-                tematica,
-                fecha_publicacion
+            SELECT id, texto, tematica, fecha_publicacion
             FROM ideas
             WHERE UPPER(TRIM(COALESCE(tematica, ''))) = 'GENERICA'
             ORDER BY id DESC
             LIMIT 14
         """)
 
-        ideas_genericas = [
+        genericas = [
             dict(fila)
             for fila in cursor.fetchall()
         ]
 
-        ideas = list(ideas_genericas)
-
-        # Si faltan ideas, completar con registros sin
-        # clasificacion GENERICA ni ESPECIFICA.
-        faltantes = 14 - len(ideas)
+        resultado = list(genericas)
+        faltantes = 14 - len(resultado)
 
         if faltantes > 0:
             cursor.execute("""
-                SELECT
-                    id,
-                    texto,
-                    tematica,
-                    fecha_publicacion
+                SELECT id, texto, tematica, fecha_publicacion
                 FROM ideas
                 WHERE UPPER(TRIM(COALESCE(tematica, '')))
                     NOT IN ('GENERICA', 'ESPECIFICA')
@@ -715,27 +702,22 @@ def obtener_ultimas_14_genericas():
                 LIMIT ?
             """, (faltantes,))
 
-            ideas_sin_clasificar = [
+            resultado.extend(
                 dict(fila)
                 for fila in cursor.fetchall()
-            ]
+            )
 
-            ideas.extend(ideas_sin_clasificar)
-
-        # Presentar el historial en orden cronologico inverso.
-        ideas.sort(
+        resultado.sort(
             key=lambda idea: idea["id"],
             reverse=True
         )
 
         print(
-            f"[DB] Historial tematico recuperado: "
-            f"{len(ideas)} ideas "
-            f"({len(ideas_genericas)} genericas y "
-            f"{len(ideas) - len(ideas_genericas)} sin clasificar)."
+            f"[DB] Historial: {len(genericas)} genéricas y "
+            f"{len(resultado) - len(genericas)} sin clasificar."
         )
 
-        return ideas
+        return resultado
 
     finally:
         conn.close()
