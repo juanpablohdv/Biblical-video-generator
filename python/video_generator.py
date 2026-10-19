@@ -211,7 +211,7 @@ def crear_clips_subtitulos(
             stroke_color="black",
             stroke_width=3,
             method="caption",
-            size=(video_width - 160, None),
+            size=(video_width - 150, None),
             text_align="center",
             margin=(0, 15)
         )

@@ -372,11 +372,15 @@ def seleccionar_idea():
             f"{len(ideas_creadas)} ideas."
         )
 
+        
         for idea in ideas_creadas:
 
             guardar_idea(
-                idea
+                texto=idea["texto"],
+                tematica=idea["tematica"],
+                fecha_publicacion=idea["fecha_publicacion"]
             )
+
 
         print(
             "[OK] Nuevas ideas guardadas."

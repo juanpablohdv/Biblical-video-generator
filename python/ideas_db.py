@@ -4,7 +4,7 @@ FUNCIONES PARA MANEJAR LA BASE DE DATOS DE IDEAS
 
 import sqlite3
 from pathlib import Path
-
+from datetime import datetime
 
 # ==========================================================
 # CONFIGURACIÓN
@@ -86,7 +86,9 @@ def crear_tabla():
             error TEXT,
             youtube_video_id TEXT,
             youtube_url TEXT,
-            youtube_thumbnail_ok INTEGER DEFAULT 0
+            youtube_thumbnail_ok INTEGER DEFAULT 0,
+            tematica TEXT,
+            fecha_publicacion TEXT
         )
     """)
 
@@ -153,6 +155,24 @@ def crear_tabla():
             ADD COLUMN youtube_thumbnail_ok INTEGER DEFAULT 0
         """)
 
+    # ------------------------------------------------------
+# NUEVAS COLUMNAS PARA PLANIFICAR LAS PUBLICACIONES
+# ------------------------------------------------------
+
+    if "tematica" not in columnas:
+
+        cursor.execute("""
+            ALTER TABLE ideas
+            ADD COLUMN tematica TEXT
+        """)
+
+    if "fecha_publicacion" not in columnas:
+
+        cursor.execute("""
+            ALTER TABLE ideas
+            ADD COLUMN fecha_publicacion TEXT
+        """)
+
     conn.commit()
     conn.close()
 
@@ -165,11 +185,22 @@ def crear_tabla():
 # GUARDAR IDEA
 # ==========================================================
 
-def guardar_idea(texto):
+
+# ==========================================================
+# GUARDAR IDEA
+# ==========================================================
+
+def guardar_idea(
+    texto,
+    tematica=None,
+    fecha_publicacion=None
+):
     """
     Guarda una nueva idea en la base de datos.
 
     Las ideas nuevas comienzan en estado IDEA.
+    La temática y la fecha de publicación son opcionales
+    para mantener compatibilidad con el código existente.
     """
 
     conn = conectar()
@@ -182,15 +213,23 @@ def guardar_idea(texto):
                 texto,
                 fecha_creacion,
                 fecha_actualizacion,
-                estado
+                estado,
+                tematica,
+                fecha_publicacion
             )
             VALUES (
                 ?,
                 datetime('now'),
                 datetime('now'),
-                'IDEA'
+                'IDEA',
+                ?,
+                ?
             )
-        """, (texto,))
+        """, (
+            texto,
+            tematica,
+            fecha_publicacion
+        ))
 
         conn.commit()
 
@@ -202,6 +241,7 @@ def guardar_idea(texto):
     finally:
 
         conn.close()
+
 
 
 # ==========================================================
@@ -611,3 +651,89 @@ def actualizar_fecha_act(idea_id):
 
     conn.commit()
     conn.close()
+
+# ==========================================================
+# OBTENER LAS ULTIMAS 14 IDEAS GENERICAS
+# ==========================================================
+
+def obtener_ultimas_14_genericas():
+    """
+    Devuelve las 14 ideas GENERICAS más recientes.
+
+    Retorna una lista de diccionarios con el ID,
+    el texto y la fecha de publicación de cada idea.
+    """
+
+    conn = conectar()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            texto,
+            tematica,
+            fecha_publicacion
+        FROM ideas
+        WHERE UPPER(TRIM(tematica)) = 'GENERICA'
+        ORDER BY id DESC
+        LIMIT 14
+    """)
+
+    filas = cursor.fetchall()
+
+    ideas = [
+        dict(fila)
+        for fila in filas
+    ]
+
+    conn.close()
+
+    return ideas
+
+
+# ==========================================================
+# OBTENER LA ULTIMA PROGRAMACION
+# ==========================================================
+
+def obtener_ultima_programacion():
+    """
+    Devuelve la fecha y hora programadas para la idea
+    con el ID más reciente.
+
+    Si no existen ideas, o la última no tiene una
+    fecha válida, devuelve la fecha y hora actuales
+    del dispositivo.
+    """
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT fecha_publicacion
+        FROM ideas
+        ORDER BY id DESC
+        LIMIT 1
+    """)
+
+    fila = cursor.fetchone()
+
+    conn.close()
+
+    # Si no existen ideas, usar la fecha actual.
+    if fila is None:
+        return datetime.now()
+
+    fecha_guardada = fila[0]
+
+    # Si la última idea no tiene fecha, usar la actual.
+    if not fecha_guardada:
+        return datetime.now()
+
+    try:
+        return datetime.fromisoformat(fecha_guardada)
+
+    except (ValueError, TypeError):
+        # Si la fecha tiene un formato incorrecto,
+        # evitar que se detenga el generador.
+        return datetime.now()
