@@ -190,24 +190,18 @@ def crear_tabla():
 # GUARDAR IDEA
 # ==========================================================
 
+
 def guardar_idea(
     texto,
     tematica=None,
     fecha_publicacion=None
 ):
-    """
-    Guarda una nueva idea en la base de datos.
-
-    Las ideas nuevas comienzan en estado IDEA.
-    La temática y la fecha de publicación son opcionales
-    para mantener compatibilidad con el código existente.
-    """
+    """Guarda una idea y devuelve True si se insertó."""
 
     conn = conectar()
     cursor = conn.cursor()
 
     try:
-
         cursor.execute("""
             INSERT INTO ideas (
                 texto,
@@ -232,14 +226,19 @@ def guardar_idea(
         ))
 
         conn.commit()
+        return cursor.rowcount == 1
 
-    except sqlite3.IntegrityError:
+    except sqlite3.IntegrityError as error:
+        conn.rollback()
 
-        # La idea ya existe.
-        pass
+        print(
+            f"[DB] No se guardó la idea por duplicado "
+            f"u otra restricción: {texto!r}. Detalle: {error}"
+        )
+
+        return False
 
     finally:
-
         conn.close()
 
 

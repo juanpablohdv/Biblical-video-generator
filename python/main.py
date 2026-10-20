@@ -373,13 +373,32 @@ def seleccionar_idea():
         )
 
         
-        for idea in ideas_creadas:
+        
+        ideas_guardadas = 0
 
-            guardar_idea(
+        for idea in ideas_creadas:
+            guardada = guardar_idea(
                 texto=idea["texto"],
                 tematica=idea["tematica"],
                 fecha_publicacion=idea["fecha_publicacion"]
             )
+
+            if guardada:
+                ideas_guardadas += 1
+
+        print(
+            f"[INFO] Ideas generadas: {len(ideas_creadas)}. "
+            f"Ideas guardadas: {ideas_guardadas}."
+        )
+
+        if ideas_guardadas != len(ideas_creadas):
+            print(
+                "[ADVERTENCIA] Algunas ideas no se guardaron. "
+                "Revisa los mensajes [DB] anteriores."
+            )
+        else:
+            print("[OK] Todas las ideas nuevas fueron guardadas.")
+
 
 
         print(

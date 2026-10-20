@@ -1,6 +1,7 @@
 """Generador de ideas para videos catolicos."""
 
 import json
+import re
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
@@ -62,32 +63,95 @@ class ExtractorHTML(HTMLParser):
             self.textos.append(texto)
 
 
-def leer_fuentes_web():
-    """Lee las paginas configuradas. Si una falla, intenta las demas."""
+
+MESES_ES = (
+    "enero", "febrero", "marzo", "abril",
+    "mayo", "junio", "julio", "agosto",
+    "septiembre", "octubre", "noviembre", "diciembre"
+)
+
+
+def leer_fuentes_web(programacion):
+    """Extrae contenido relevante para las fechas programadas."""
+
     contenidos = []
 
     for url in FUENTES_WEB:
         try:
             solicitud = Request(
                 url,
-                headers={"User-Agent": "BiblicalVideoGenerator/1.0"},
+                headers={"User-Agent": "Mozilla/5.0"}
             )
 
             with urlopen(solicitud, timeout=20) as respuesta:
-                html = respuesta.read().decode("utf-8", errors="replace")
+                html = respuesta.read().decode(
+                    "utf-8",
+                    errors="replace"
+                )
 
             extractor = ExtractorHTML()
             extractor.feed(html)
             texto = " ".join(extractor.textos)
 
-            # Limitar el contenido por fuente para controlar el contexto enviado a la IA.
-            texto = texto[:18000]
+            if not texto:
+                print(f"[WEB] Sin texto legible: {url}")
+                continue
 
-            if texto:
-                contenidos.append(f"FUENTE: {url}\nCONTENIDO:\n{texto}")
-                print(f"[WEB] Fuente consultada: {url}")
+            fragmentos = []
+            fragmentos_vistos = set()
+
+            for slot in programacion:
+                fecha = datetime.fromisoformat(
+                    slot["fecha_publicacion"]
+                )
+
+                dia = fecha.day
+                mes = MESES_ES[fecha.month - 1]
+
+                patron = (
+                    rf"\b{dia}\s+de\s+{mes}"
+                    rf"(?:\s+de\s+\d{{4}})?\b"
+                )
+
+                for coincidencia in re.finditer(
+                    patron, texto, re.IGNORECASE
+                ):
+                    inicio = max(0, coincidencia.start() - 700)
+                    fin = min(len(texto), coincidencia.end() + 1800)
+                    fragmento = texto[inicio:fin].strip()
+
+                    if fragmento not in fragmentos_vistos:
+                        fragmentos.append(
+                            f"Fecha buscada: {dia} de {mes}\n"
+                            f"{fragmento}"
+                        )
+                        fragmentos_vistos.add(fragmento)
+
+            if fragmentos:
+                contenidos.append(
+                    f"FUENTE: {url}\n"
+                    + "\n\n".join(fragmentos)
+                )
+                print(
+                    f"[WEB] Se encontraron fragmentos "
+                    f"para fechas programadas: {url}"
+                )
+
+            elif len(texto) <= 18000:
+                # Una fuente corta puede aportar contexto general.
+                contenidos.append(
+                    f"FUENTE: {url}\nCONTENIDO:\n{texto}"
+                )
+                print(
+                    f"[WEB] Fuente general consultada: {url}. "
+                    "No se identificaron fechas concretas."
+                )
+
             else:
-                print(f"[WEB] La fuente no contenia texto legible: {url}")
+                print(
+                    f"[WEB] No se encontraron fechas programadas "
+                    f"en la fuente extensa: {url}"
+                )
 
         except Exception as error:
             print(f"[WEB] No se pudo leer {url}: {error}")
@@ -185,7 +249,7 @@ def generar_ideas():
     )
 
     print("[IDEAS] Consultando fuentes web...")
-    fuentes_web = leer_fuentes_web()
+    fuentes_web = leer_fuentes_web(programacion)
     if not fuentes_web:
         fuentes_web = (
             "No se pudo obtener contenido de las fuentes configuradas. "
@@ -222,6 +286,7 @@ def generar_ideas():
         )
 
     resultado = []
+    titulos_vistos = set()
 
     for indice, idea in enumerate(ideas_modelo):
         if not isinstance(idea, dict):
