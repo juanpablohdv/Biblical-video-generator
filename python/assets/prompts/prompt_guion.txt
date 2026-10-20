@@ -10,7 +10,7 @@ REGLAS IMPORTANTES:
 - Termina el guion diciendo "Comenta Amén para que este video llegue a personas que lo necesiten"
 
 ESTRUCTURA:
-1. Hook inicial (pregunta o dato sorprendente).
+1. Hook inicial (pregunta o dato sorprendente, que no siempre sea "¿Sabias que...").
 2. Desarrollo breve y claro.
 3. Cierre inspirador o reflexivo.
 
