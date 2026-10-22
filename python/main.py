@@ -24,6 +24,7 @@ from ideas_db import (
     obtener_idea_no_usada,
     obtener_idea_por_id,
     modificar_estado,
+    obtener_tematica_por_id, 
     contar_ideas_no_usadas,
     registrar_error,
     guardar_youtube,
@@ -493,9 +494,12 @@ def ejecutar_pipeline():
             "[2/11] Generando guion..."
         )
 
+        tematica = obtener_tematica_por_id(idea_id)
+
         guion = generate_guion(
             texto_idea,
-            idea_id
+            idea_id,
+            tematica
         )
 
         if not guion:
