@@ -11,7 +11,7 @@ REGLAS IMPORTANTES:
 
 ESTRUCTURA:
 1. Hook inicial (pregunta o dato sorprendente, que no siempre sea "¿Sabias que...").
-2. Algo parecido a "Hoy, dia de ________ te contaremos sobre..." segun la tematica (ejemplo: dia de santa ursula, dia de la virgen del carmen, dia de san agustin, etc)
+2. Algo parecido a "Hoy, dia de *santo o celebracion del dia* te contaremos sobre..." segun la tematica (ejemplo: hoy dia de santa ursula, hoy dia de la virgen del carmen, hoy dia de san agustin, etc)
 3. Desarrollo breve y claro.
 4. Cierre inspirador o reflexivo.
 
