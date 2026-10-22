@@ -43,6 +43,30 @@ ESTADOS = (
     "COMPLETADA"
 )
 
+# ==========================================================
+# OBTENER TEMÁTICA POR ID
+# ==========================================================
+
+def obtener_tematica_por_id(idea_id):
+    """
+    Obtiene la temática de una idea por su ID.
+    """
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT tematica
+        FROM ideas
+        WHERE id = ?
+    """, (idea_id,))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row[0] if row else None
+
+
 
 # ==========================================================
 # CONEXIÓN

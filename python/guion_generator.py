@@ -25,20 +25,58 @@ def guardar_guion_a_archivo(id_idea, text):
 
     ruta.write_text(text, encoding="utf-8")
 
-def generate_guion(idea, idea_id):
-    "Funcion de generacion de guion"
+def generate_guion(idea, idea_id, tematica):
+    """
+    Genera el guion usando un prompt distinto
+    según la temática de la idea.
+    """
 
-    prompt = cargar_prompts("guion", idea=idea)
+    tematica = (tematica or "").strip().upper()
 
-    reponse = client.chat.completions.create(
+    if tematica == "GENERICA":
+        nombre_prompt = "guion_generico"
+
+    elif tematica == "ESPECIFICA":
+        nombre_prompt = "guion_especifico"
+
+    else:
+        raise ValueError(
+            f"La idea #{idea_id} no tiene una temática válida: "
+            f"{tematica!r}. Se esperaba GENERICA o ESPECIFICA."
+        )
+
+    print(
+        f"[INFO] Generando guion para idea #{idea_id} "
+        f"con el prompt: {nombre_prompt}"
+    )
+
+    prompt = cargar_prompts(
+        nombre_prompt,
+        idea=idea
+    )
+
+    response = client.chat.completions.create(
         model="gpt-6-luna",
         messages=[
-            {"role": "user", "content": prompt}
+            {
+                "role": "user",
+                "content": prompt
+            }
         ]
     )
 
-    respuesta = reponse.choices[0].message.content.strip()
-    guardar_guion_a_archivo(idea_id, respuesta)
+    respuesta = response.choices[0].message.content.strip()
+
+    if not respuesta:
+        raise RuntimeError(
+            f"La IA devolvió un guion vacío para la idea #{idea_id}."
+        )
+
+    guardar_guion_a_archivo(
+        idea_id,
+        respuesta
+    )
+
     return respuesta
 
 def generate_voice(text, idea_id):
