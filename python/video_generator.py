@@ -525,7 +525,7 @@ def generar_video(idea_id):
     # ======================================================
 
     video = video.with_audio(
-        audio_final
+        audio_final).with_duration(duracion_video
     )
 
     # ======================================================
