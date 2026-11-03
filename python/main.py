@@ -989,6 +989,18 @@ def ejecutar_pipeline():
         registro[9]
     )
 
+    fecha_publicacion = registro[10]
+
+    if not fecha_publicacion:
+        raise RuntimeError(
+            f"La idea #{idea_id} no tiene fecha de publicación "
+            "en la base de datos."
+        )
+
+    print(
+        f"[INFO] Fecha programada: {fecha_publicacion}"
+    )
+
     # ------------------------------------------------------
     # ¿Ya se subió?
     # ------------------------------------------------------
@@ -1065,7 +1077,9 @@ def ejecutar_pipeline():
 
                 categoria_id=CATEGORIA_YOUTUBE,
 
-                privacidad=PRIVACIDAD_YOUTUBE
+                privacidad=PRIVACIDAD_YOUTUBE,
+
+                fecha_publicacion=fecha_publicacion
             )
         )
 

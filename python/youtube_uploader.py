@@ -208,92 +208,122 @@ def normalizar_ruta(ruta):
 # SUBIR VIDEO
 # ============================================================
 
+
 def subir_video(
     ruta_video,
     titulo,
     descripcion="",
     tags=None,
     categoria_id="22",
-    privacidad="private"
+    privacidad="private",
+    fecha_publicacion=None
 ):
     """
-    Sube un video a YouTube.
+    Sube un video a YouTube y programa su publicación.
 
-    Retorna:
-        video_id
+    fecha_publicacion debe venir de la base de datos
+    en formato ISO, por ejemplo:
+    2026-11-05T19:00:00
     """
 
-    ruta_video = normalizar_ruta(
-        ruta_video
-    )
-
-    # --------------------------------------------------------
-    # Validar video
-    # --------------------------------------------------------
+    ruta_video = normalizar_ruta(ruta_video)
 
     if not ruta_video.exists():
-
         raise FileNotFoundError(
             f"No se encontró el video:\n{ruta_video}"
         )
 
     if ruta_video.suffix.lower() != ".mp4":
-
-        raise ValueError(
-            "El archivo debe ser un video MP4."
-        )
+        raise ValueError("El archivo debe ser un video MP4.")
 
     # --------------------------------------------------------
-    # Añadir #Shorts
+    # VALIDAR FECHA DE PUBLICACIÓN
+    # --------------------------------------------------------
+
+    if not fecha_publicacion:
+        raise ValueError(
+            "La idea no tiene fecha_publicacion en la base de datos. "
+            "No se subirá el video sin programación."
+        )
+
+    try:
+        fecha_programada = datetime.fromisoformat(
+            str(fecha_publicacion).replace("Z", "+00:00")
+        )
+    except (ValueError, TypeError):
+        raise ValueError(
+            f"Fecha de publicación inválida: {fecha_publicacion!r}"
+        )
+
+    # Las fechas sin zona horaria se interpretan como hora de Colombia.
+    zona_colombia = timezone(timedelta(hours=-5))
+
+    if fecha_programada.tzinfo is None:
+        fecha_programada = fecha_programada.replace(
+            tzinfo=zona_colombia
+        )
+    else:
+        fecha_programada = fecha_programada.astimezone(
+            zona_colombia
+        )
+
+    ahora = datetime.now(zona_colombia)
+
+    # Exigimos al menos 10 minutos para evitar que la subida
+    # termine después de la hora programada.
+    margen_seguridad = timedelta(minutes=10)
+
+    if fecha_programada <= ahora + margen_seguridad:
+        raise ValueError(
+            "La fecha programada debe estar al menos 10 minutos "
+            "en el futuro.\n"
+            f"Ahora: {ahora.isoformat()}\n"
+            f"Programada: {fecha_programada.isoformat()}"
+        )
+
+    fecha_youtube = fecha_programada.isoformat(
+        timespec="seconds"
+    )
+
+    # --------------------------------------------------------
+    # AÑADIR #SHORTS
     # --------------------------------------------------------
 
     if (
         "#shorts" not in titulo.lower()
-        and
-        "#shorts" not in descripcion.lower()
+        and "#shorts" not in descripcion.lower()
     ):
-
         descripcion = (
-            descripcion.rstrip()
-            +
-            "\n\n#Shorts"
+            descripcion.rstrip() + "\n\n#Shorts"
         ).strip()
 
     # --------------------------------------------------------
-    # Servicio
+    # SERVICIO
     # --------------------------------------------------------
 
-    youtube = (
-        obtener_servicio_youtube()
-    )
+    youtube = obtener_servicio_youtube()
 
     # --------------------------------------------------------
-    # Datos del video
+    # DATOS DEL VIDEO
     # --------------------------------------------------------
 
     cuerpo = {
-
         "snippet": {
-
             "title": titulo,
-
             "description": descripcion,
-
             "tags": tags or [],
-
             "categoryId": categoria_id
         },
-
         "status": {
-
-            "privacyStatus": privacidad,
+            "privacyStatus": "private",
+            "publishAt": fecha_youtube,
             "containsSyntheticMedia": True,
             "selfDeclaredMadeForKids": False
         }
     }
 
     # --------------------------------------------------------
-    # Archivo
+    # ARCHIVO
     # --------------------------------------------------------
 
     media = MediaFileUpload(
@@ -304,7 +334,7 @@ def subir_video(
     )
 
     # --------------------------------------------------------
-    # Solicitud
+    # SOLICITUD
     # --------------------------------------------------------
 
     solicitud = (
@@ -318,69 +348,38 @@ def subir_video(
     )
 
     # --------------------------------------------------------
-    # Subir
+    # SUBIR
     # --------------------------------------------------------
 
     print()
     print("=" * 60)
-    print("SUBIENDO VIDEO A YOUTUBE")
+    print("SUBIENDO Y PROGRAMANDO VIDEO EN YOUTUBE")
     print("=" * 60)
-
-    print(
-        f"Archivo: {ruta_video.name}"
-    )
-
-    print(
-        f"Título: {titulo}"
-    )
-
-    print(
-        f"Privacidad: {privacidad}"
-    )
-
+    print(f"Archivo: {ruta_video.name}")
+    print(f"Título: {titulo}")
+    print("Privacidad inicial: private")
+    print(f"Publicación programada: {fecha_youtube}")
     print()
 
     respuesta = None
 
     try:
-
         while respuesta is None:
-
-            estado, respuesta = (
-                solicitud.next_chunk()
-            )
+            estado, respuesta = solicitud.next_chunk()
 
             if estado:
-
-                porcentaje = int(
-                    estado.progress() * 100
-                )
-
-                print(
-                    f"[UPLOAD] {porcentaje}%"
-                )
+                porcentaje = int(estado.progress() * 100)
+                print(f"[UPLOAD] {porcentaje}%")
 
     except HttpError as error:
-
         print()
-        print(
-            "[ERROR] YouTube rechazó la subida."
-        )
-
+        print("[ERROR] YouTube rechazó la subida.")
         print(error)
-
         raise
 
-    # --------------------------------------------------------
-    # Video ID
-    # --------------------------------------------------------
-
-    video_id = respuesta.get(
-        "id"
-    )
+    video_id = respuesta.get("id")
 
     if not video_id:
-
         raise RuntimeError(
             "YouTube respondió correctamente, "
             "pero no devolvió un video_id."
@@ -392,18 +391,10 @@ def subir_video(
     )
 
     print()
-    print(
-        "[OK] Video subido correctamente."
-    )
-
-    print(
-        f"[OK] Video ID: {video_id}"
-    )
-
-    print(
-        f"[OK] URL: {url}"
-    )
-
+    print("[OK] Video subido y programación enviada a YouTube.")
+    print(f"[OK] Video ID: {video_id}")
+    print(f"[OK] URL: {url}")
+    print(f"[OK] Se publicará: {fecha_youtube}")
     print()
 
     return video_id
