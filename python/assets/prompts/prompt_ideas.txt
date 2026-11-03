@@ -53,7 +53,7 @@ Historial temático de referencia:
 
 {historial_genericas}
 
-Este historial contiene prioritariamente las últimas ideas clasificadas como GENERICA. Si había menos de 14, se ha completado con ideas antiguas sin clasificación reconocida.
+Este historial contiene prioritariamente las últimas ideas clasificadas como GENERICA.
 
 Utiliza todas las ideas proporcionadas para evitar repeticiones. Analiza el tema central, no solo el título. No repitas esencialmente la misma historia, enseñanza, pasaje, milagro o curiosidad con palabras diferentes.
 

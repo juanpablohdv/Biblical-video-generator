@@ -374,6 +374,8 @@ def obtener_idea_por_id(idea_id):
             youtube_video_id,
             youtube_url,
             youtube_thumbnail_ok
+            tematica,
+            fecha_publicacion
         FROM ideas
         WHERE id = ?
     """, (idea_id,))
