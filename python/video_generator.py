@@ -495,7 +495,7 @@ def generar_video(idea_id):
 
     musica = musica.with_effects([
         AudioLoop(
-            duration=duracion_audio
+            duration=duracion_video
         )
     ])
 
