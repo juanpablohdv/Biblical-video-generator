@@ -35,6 +35,9 @@ FONT_SUBTITULOS = BASE_DIR / "assets" / "fonts" / "Montserrat-SemiBold.ttf"
 # SELECCIONAR MÚSICA
 # ==========================================================
 
+# Tiempo adicional de música al finalizar la narración
+DURACION_COLA_MUSICAL = 0.5
+
 def seleccionar_musica(idea_id):
     """
     Selecciona automáticamente una pista de música
@@ -370,8 +373,10 @@ def generar_video(idea_id):
     # CALCULAR DURACIÓN POR IMAGEN
     # ======================================================
 
+    duracion_video = duracion_audio + DURACION_COLA_MUSICAL
+
     duracion_por_imagen = (
-        duracion_audio /
+        duracion_video /
         len(archivos_images)
     )
 
@@ -380,26 +385,35 @@ def generar_video(idea_id):
         f"{duracion_por_imagen:.2f} segundos"
     )
 
+    print(
+        f"[INFO] Duración total del video: "
+        f"{duracion_video:.2f} segundos"
+    )
+
     # ======================================================
     # CREAR CLIPS DE IMÁGENES
     # ======================================================
 
     clips = []
 
-    for ruta_imagen in archivos_images:
+    clips = []
+
+    for indice, ruta_imagen in enumerate(archivos_images):
 
         print(
             f"[INFO] Procesando imagen: "
             f"{ruta_imagen.name}"
         )
 
+        duracion = duracion_por_imagen
+
+        # La última imagen permanece durante la cola musical
+        if indice == len(archivos_images) - 1:
+            duracion += DURACION_COLA_MUSICAL
+
         clip = (
-            ImageClip(
-                str(ruta_imagen)
-            )
-            .with_duration(
-                duracion_por_imagen
-            )
+            ImageClip(str(ruta_imagen))
+            .with_duration(duracion)
         )
 
         clips.append(clip)
