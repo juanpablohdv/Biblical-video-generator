@@ -17,9 +17,9 @@ Estos son los espacios de publicación que debes completar:
 
 Genera una idea por cada espacio, respetando exactamente el orden, la fecha, la hora y la temática indicadas. No inventes ni cambies la programación.
 
-- 10:00: ESPECIFICA.
-- 14:00: ESPECIFICA.
-- 19:00: GENERICA.
+- 06:00: ESPECIFICA.
+- 11:00: ESPECIFICA.
+- 17:00: GENERICA.
 
 Respeta la temática indicada en cada elemento, incluso si la lista comienza a mitad del día.
 
